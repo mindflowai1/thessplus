@@ -8,6 +8,15 @@ export interface Database {
           phone: string | null
           created_at: string
           updated_at: string
+          subscription_status?: 'free' | 'trial' | 'active' | 'canceled' | 'expired' | 'past_due' | null
+          subscription_plan?: 'free' | 'basic' | 'premium' | 'enterprise' | null
+          subscription_start_date?: string | null
+          subscription_end_date?: string | null
+          subscription_renewal_date?: string | null
+          payment_provider?: 'stripe' | 'mercadopago' | 'asaas' | 'pagar_me' | null
+          payment_customer_id?: string | null
+          payment_subscription_id?: string | null
+          trial_end_date?: string | null
         }
         Insert: {
           id: string
@@ -15,6 +24,15 @@ export interface Database {
           phone?: string | null
           created_at?: string
           updated_at?: string
+          subscription_status?: 'free' | 'trial' | 'active' | 'canceled' | 'expired' | 'past_due' | null
+          subscription_plan?: 'free' | 'basic' | 'premium' | 'enterprise' | null
+          subscription_start_date?: string | null
+          subscription_end_date?: string | null
+          subscription_renewal_date?: string | null
+          payment_provider?: 'stripe' | 'mercadopago' | 'asaas' | 'pagar_me' | null
+          payment_customer_id?: string | null
+          payment_subscription_id?: string | null
+          trial_end_date?: string | null
         }
         Update: {
           id?: string
@@ -22,6 +40,15 @@ export interface Database {
           phone?: string | null
           created_at?: string
           updated_at?: string
+          subscription_status?: 'free' | 'trial' | 'active' | 'canceled' | 'expired' | 'past_due' | null
+          subscription_plan?: 'free' | 'basic' | 'premium' | 'enterprise' | null
+          subscription_start_date?: string | null
+          subscription_end_date?: string | null
+          subscription_renewal_date?: string | null
+          payment_provider?: 'stripe' | 'mercadopago' | 'asaas' | 'pagar_me' | null
+          payment_customer_id?: string | null
+          payment_subscription_id?: string | null
+          trial_end_date?: string | null
         }
       }
       transactions: {

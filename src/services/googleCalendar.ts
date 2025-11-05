@@ -82,13 +82,50 @@ export async function listReminders(startDate?: string, endDate?: string): Promi
       throw new Error('Google token not found. Please authenticate with Google.')
     }
 
-    const timeMin = startDate 
-      ? new Date(`${startDate}T00:00:00`).toISOString()
-      : new Date().toISOString()
+    // Parse dates safely - startDate and endDate should be in format YYYY-MM-DD
+    let timeMin: string
+    if (startDate) {
+      // Check if it's already an ISO string or just a date string
+      if (startDate.includes('T')) {
+        // Already an ISO string, use it directly
+        const date = new Date(startDate)
+        if (isNaN(date.getTime())) {
+          throw new Error(`Invalid start date: ${startDate}`)
+        }
+        timeMin = date.toISOString()
+      } else {
+        // Format YYYY-MM-DD, add time
+        const date = new Date(`${startDate}T00:00:00Z`)
+        if (isNaN(date.getTime())) {
+          throw new Error(`Invalid start date: ${startDate}`)
+        }
+        timeMin = date.toISOString()
+      }
+    } else {
+      timeMin = new Date().toISOString()
+    }
     
-    const timeMax = endDate
-      ? new Date(`${endDate}T23:59:59`).toISOString()
-      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days ahead
+    let timeMax: string
+    if (endDate) {
+      // Check if it's already an ISO string or just a date string
+      if (endDate.includes('T')) {
+        // Already an ISO string, use it directly
+        const date = new Date(endDate)
+        if (isNaN(date.getTime())) {
+          throw new Error(`Invalid end date: ${endDate}`)
+        }
+        timeMax = date.toISOString()
+      } else {
+        // Format YYYY-MM-DD, add time
+        const date = new Date(`${endDate}T23:59:59Z`)
+        if (isNaN(date.getTime())) {
+          throw new Error(`Invalid end date: ${endDate}`)
+        }
+        timeMax = date.toISOString()
+      }
+    } else {
+      timeMax = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days ahead
+    }
 
     const params = new URLSearchParams({
       timeMin,
@@ -108,7 +145,20 @@ export async function listReminders(startDate?: string, endDate?: string): Promi
 
     if (!response.ok) {
       const error = await response.json()
-      throw new Error(error.error?.message || 'Failed to fetch calendar events')
+      const errorMessage = error.error?.message || 'Failed to fetch calendar events'
+      
+      // Provide helpful error messages for common issues
+      if (response.status === 403) {
+        if (errorMessage.includes('has not been used') || errorMessage.includes('disabled')) {
+          throw new Error(
+            'A API Google Calendar não está habilitada. ' +
+            'Habilite em: https://console.cloud.google.com/apis/api/calendar-json.googleapis.com/overview?project=454059341133'
+          )
+        }
+        throw new Error('Erro de autorização (403). Verifique se você autorizou o acesso ao Google Calendar.')
+      }
+      
+      throw new Error(errorMessage)
     }
 
     const data = await response.json()

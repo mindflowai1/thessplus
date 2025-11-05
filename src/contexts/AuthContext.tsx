@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { Session, User } from '@supabase/supabase-js'
 import { supabase } from '@/services/supabase'
+import { hasDashboardAccess, hasPremiumAccess as checkPremiumAccess, getSubscriptionInfo as getSubInfo, SubscriptionInfo } from '@/lib/subscription'
 
 interface Profile {
   id: string
@@ -8,6 +9,15 @@ interface Profile {
   phone: string | null
   created_at: string
   updated_at: string
+  subscription_status?: 'free' | 'trial' | 'active' | 'canceled' | 'expired' | 'past_due'
+  subscription_plan?: 'free' | 'basic' | 'premium' | 'enterprise'
+  subscription_start_date?: string | null
+  subscription_end_date?: string | null
+  subscription_renewal_date?: string | null
+  payment_provider?: 'stripe' | 'mercadopago' | 'asaas' | 'pagar_me' | null
+  payment_customer_id?: string | null
+  payment_subscription_id?: string | null
+  trial_end_date?: string | null
 }
 
 interface AuthContextType {
@@ -18,6 +28,9 @@ interface AuthContextType {
   signInWithGoogle: () => Promise<void>
   signOut: () => Promise<void>
   refreshUserProfile: () => Promise<void>
+  hasAccess: () => boolean
+  hasPremiumAccess: () => boolean
+  getSubscriptionInfo: () => SubscriptionInfo | null
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -27,8 +40,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [userProfile, setUserProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isFetchingProfile, setIsFetchingProfile] = useState(false)
 
-  const fetchUserProfile = async (userId: string) => {
+  const fetchUserProfile = async (userId: string, currentUser?: User) => {
+    // Evita múltiplas chamadas simultâneas
+    if (isFetchingProfile) {
+      return
+    }
+
+    setIsFetchingProfile(true)
+    
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -38,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching profile:', error)
+        setIsFetchingProfile(false)
         return
       }
 
@@ -45,28 +67,75 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUserProfile(data)
       } else {
         // Cria perfil se não existir
+        const userToUse = currentUser || user
+        const fullName = userToUse?.user_metadata?.full_name || userToUse?.email?.split('@')[0] || null
+        
         const { data: newProfile, error: createError } = await supabase
           .from('profiles')
           .insert({
             id: userId,
-            full_name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || null,
+            full_name: fullName,
           })
           .select()
           .single()
 
         if (!createError && newProfile) {
           setUserProfile(newProfile)
+        } else if (createError) {
+          console.error('Error creating profile:', createError)
+          // Se já existe (erro de chave duplicada), busca novamente
+          if (createError.code === '23505') {
+            const { data: existingProfile } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', userId)
+              .single()
+            if (existingProfile) {
+              setUserProfile(existingProfile)
+            }
+          }
         }
       }
     } catch (error) {
       console.error('Error in fetchUserProfile:', error)
+    } finally {
+      setIsFetchingProfile(false)
     }
   }
 
   const refreshUserProfile = async () => {
     if (user?.id) {
-      await fetchUserProfile(user.id)
+      await fetchUserProfile(user.id, user)
     }
+  }
+
+  // Funções de verificação de acesso
+  const hasAccess = () => {
+    if (!userProfile) return false
+    return hasDashboardAccess(
+      userProfile.subscription_status,
+      userProfile.subscription_plan,
+      userProfile.subscription_end_date
+    )
+  }
+
+  const hasPremiumAccess = () => {
+    if (!userProfile) return false
+    return checkPremiumAccess(
+      userProfile.subscription_status,
+      userProfile.subscription_plan,
+      userProfile.subscription_end_date
+    )
+  }
+
+  const getSubscriptionInfo = () => {
+    if (!userProfile) return null
+    return getSubInfo(
+      userProfile.subscription_status,
+      userProfile.subscription_plan,
+      userProfile.subscription_end_date,
+      userProfile.trial_end_date
+    )
   }
 
   const signInWithGoogle = async () => {
@@ -106,26 +175,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       setUser(session?.user ?? null)
-      if (session?.user?.id) {
-        fetchUserProfile(session.user.id)
-      }
       setLoading(false)
+      
+      // Busca perfil em background (não bloqueia o loading)
+      if (session?.user) {
+        fetchUserProfile(session.user.id, session.user)
+      }
     })
 
     // Escuta mudanças de autenticação
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session)
       setUser(session?.user ?? null)
       
-      if (session?.user?.id) {
-        await fetchUserProfile(session.user.id)
+      if (session?.user) {
+        // Busca perfil em background
+        fetchUserProfile(session.user.id, session.user)
       } else {
         setUserProfile(null)
       }
-
-      setLoading(false)
     })
 
     return () => subscription.unsubscribe()
@@ -141,6 +211,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signInWithGoogle,
         signOut,
         refreshUserProfile,
+        hasAccess,
+        hasPremiumAccess,
+        getSubscriptionInfo,
       }}
     >
       {children}

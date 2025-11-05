@@ -221,7 +221,26 @@ CREATE POLICY "Users can delete own reminders"
     USING (auth.uid() = user_id);
 
 -- ============================================
--- 6. FUNÇÃO: change_user_password (Trocar Senha)
+-- 6. ADICIONAR CAMPOS DE ASSINATURA NA TABELA profiles
+-- ============================================
+ALTER TABLE profiles 
+ADD COLUMN IF NOT EXISTS subscription_status TEXT DEFAULT 'free' CHECK (subscription_status IN ('free', 'trial', 'active', 'canceled', 'expired', 'past_due')),
+ADD COLUMN IF NOT EXISTS subscription_plan TEXT DEFAULT 'free' CHECK (subscription_plan IN ('free', 'basic', 'premium', 'enterprise')),
+ADD COLUMN IF NOT EXISTS subscription_start_date TIMESTAMPTZ,
+ADD COLUMN IF NOT EXISTS subscription_end_date TIMESTAMPTZ,
+ADD COLUMN IF NOT EXISTS subscription_renewal_date TIMESTAMPTZ,
+ADD COLUMN IF NOT EXISTS payment_provider TEXT CHECK (payment_provider IN ('stripe', 'mercadopago', 'asaas', 'pagar_me', NULL)),
+ADD COLUMN IF NOT EXISTS payment_customer_id TEXT,
+ADD COLUMN IF NOT EXISTS payment_subscription_id TEXT,
+ADD COLUMN IF NOT EXISTS trial_end_date TIMESTAMPTZ;
+
+-- Índices para consultas de assinaturas
+CREATE INDEX IF NOT EXISTS idx_profiles_subscription_status ON profiles(subscription_status) WHERE subscription_status IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_profiles_subscription_plan ON profiles(subscription_plan) WHERE subscription_plan IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_profiles_payment_customer_id ON profiles(payment_customer_id) WHERE payment_customer_id IS NOT NULL;
+
+-- ============================================
+-- 7. FUNÇÃO: change_user_password (Trocar Senha)
 -- ============================================
 CREATE OR REPLACE FUNCTION change_user_password(current_password text, new_password text)
 RETURNS json

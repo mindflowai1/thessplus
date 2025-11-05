@@ -133,12 +133,12 @@ export function LimitsPage() {
         <div
           className={`p-4 rounded-lg border ${
             message.type === 'success'
-              ? 'bg-green-50 border-green-200 text-green-800 dark:bg-green-950 dark:border-green-800 dark:text-green-200'
+              ? 'bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-950 dark:border-blue-800 dark:text-blue-200'
               : 'bg-red-50 border-red-200 text-red-800 dark:bg-red-950 dark:border-red-800 dark:text-red-200'
           }`}
         >
           <div className="flex items-center space-x-2">
-            <AlertCircle className="h-4 w-4" />
+            <AlertCircle className="h-4 w-4 dark:text-gray-200" />
             <span>{message.text}</span>
           </div>
         </div>
@@ -175,7 +175,7 @@ export function LimitsPage() {
                           step="0.01"
                           min="0"
                           value={value || ''}
-                          onChange={(e) => handleLimitChange(category, e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLimitChange(category, e.target.value)}
                           className="pl-12"
                           placeholder="0,00"
                         />

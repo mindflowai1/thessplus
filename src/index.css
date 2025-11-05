@@ -2,6 +2,89 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Style date input calendar icon in dark mode */
+@layer base {
+  /* Chrome/Safari - Ícone nativo do calendário - FORÇA BRANCO */
+  html.dark input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(2) contrast(1.2);
+    opacity: 1 !important;
+    cursor: pointer;
+    background-image: none !important;
+    background-color: transparent !important;
+    width: 16px !important;
+    height: 16px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  html.dark input[type="date"]::-webkit-inner-spin-button,
+  html.dark input[type="date"]::-webkit-clear-button {
+    filter: invert(1) brightness(2);
+    opacity: 1 !important;
+  }
+  
+  /* Chrome/Safari - Ícone nativo do relógio (time) - FORÇA BRANCO */
+  html.dark input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(2) contrast(1.2);
+    opacity: 1 !important;
+    cursor: pointer;
+    background-image: none !important;
+    background-color: transparent !important;
+    width: 16px !important;
+    height: 16px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  html.dark input[type="time"]::-webkit-inner-spin-button,
+  html.dark input[type="time"]::-webkit-clear-button {
+    filter: invert(1) brightness(2);
+    opacity: 1 !important;
+  }
+  
+  /* Firefox - Ícone nativo do calendário */
+  html.dark input[type="date"] {
+    color-scheme: dark;
+  }
+  
+  html.dark input[type="date"]::-moz-calendar-picker-indicator {
+    filter: invert(1) brightness(2);
+    opacity: 1 !important;
+    cursor: pointer;
+  }
+  
+  /* Firefox - Ícone nativo do relógio (time) */
+  html.dark input[type="time"] {
+    color-scheme: dark;
+  }
+  
+  html.dark input[type="time"]::-moz-calendar-picker-indicator {
+    filter: invert(1) brightness(2);
+    opacity: 1 !important;
+    cursor: pointer;
+  }
+  
+  /* Improve visibility of custom calendar icon in dark mode */
+  html.dark input[type="date"] + .absolute,
+  html.dark .relative input[type="date"] ~ .absolute {
+    color: rgb(209 213 219) !important;
+  }
+}
+
+/* Force white calendar icon on dark mode - OUTSIDE @layer for higher specificity */
+html.dark input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(2.5) !important;
+  opacity: 1 !important;
+}
+
+/* Force white time/clock icon on dark mode - OUTSIDE @layer for higher specificity */
+html.dark input[type="time"]::-webkit-calendar-picker-indicator,
+html.dark input[type="time"]::-webkit-inner-spin-button,
+html.dark input[type="time"]::-webkit-clear-button {
+  filter: invert(1) brightness(2.5) !important;
+  opacity: 1 !important;
+}
+
 /* Smooth scrolling for better UX */
 html {
   scroll-behavior: smooth;
@@ -10,24 +93,24 @@ html {
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 222.2 47.4% 11.2%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 222.2 47.4% 11.2%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 142 76% 36%; /* Verde Thees Engenharia */
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+    --primary: 220 90% 20%; /* Azul Navy Escuro - Thees Engenharia */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 270 40% 96%; /* Roxo Claro - Thees Engenharia */
+    --secondary-foreground: 220 90% 20%;
+    --muted: 270 30% 95%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 142 76% 40%; /* Verde mais claro */
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 220 85% 35%; /* Azul Médio - Thees Engenharia */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 142 76% 36%; /* Verde Thees */
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 20% 90%;
+    --input: 220 20% 90%;
+    --ring: 220 90% 20%; /* Azul Navy - Thees */
     --radius: 0.5rem;
   }
 
@@ -38,19 +121,19 @@ html {
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 142 76% 50%; /* Verde mais claro no dark */
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
+    --primary: 220 85% 50%; /* Azul mais claro no dark */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 270 30% 20%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 142 76% 45%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 220 75% 45%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 142 76% 50%;
+    --ring: 220 85% 50%;
   }
 }
 
@@ -60,6 +143,150 @@ html {
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', 'Montserrat', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Force light mode ONLY for Landing Page (class .light) */
+  .light {
+    background: white !important;
+    color: #111827 !important;
+    color-scheme: light !important;
+  }
+  
+  /* Override dark mode styles ONLY inside .light */
+  html.dark .light {
+    background: white !important;
+    color: #111827 !important;
+  }
+  
+  /* Override background utilities in dark mode ONLY inside .light */
+  html.dark .light .bg-background {
+    background-color: white !important;
+  }
+  
+  html.dark .light .bg-card {
+    background-color: white !important;
+  }
+  
+  html.dark .light .bg-muted {
+    background-color: #f9fafb !important;
+  }
+  
+  html.dark .light .bg-gray-50 {
+    background-color: #f9fafb !important;
+  }
+  
+  html.dark .light .bg-blue-50 {
+    background-color: #eff6ff !important;
+  }
+  
+  html.dark .light .bg-amber-50 {
+    background-color: #fffbeb !important;
+  }
+  
+  html.dark .light .bg-white {
+    background-color: white !important;
+  }
+  
+  /* Override text color utilities in dark mode ONLY inside .light */
+  html.dark .light .text-foreground {
+    color: #111827 !important;
+  }
+  
+  html.dark .light .text-muted-foreground {
+    color: #6b7280 !important;
+  }
+  
+  html.dark .light .text-gray-600 {
+    color: #4b5563 !important;
+  }
+  
+  html.dark .light .text-gray-700 {
+    color: #374151 !important;
+  }
+  
+  html.dark .light .text-gray-900 {
+    color: #111827 !important;
+  }
+  
+  html.dark .light .text-blue-600 {
+    color: #2563eb !important;
+  }
+  
+  html.dark .light .text-amber-600 {
+    color: #d97706 !important;
+  }
+  
+  /* Override border colors in dark mode ONLY inside .light */
+  html.dark .light .border-gray-200 {
+    border-color: #e5e7eb !important;
+  }
+  
+  html.dark .light .border-gray-300 {
+    border-color: #d1d5db !important;
+  }
+  
+  /* Override ALL dark: classes from Tailwind inside .light - COMPLETE COVERAGE */
+  /* Force all elements inside .light to ignore dark mode styles */
+  html.dark .light * {
+    /* Reset any dark mode variables */
+  }
+  
+  /* Specific overrides for dark: classes - Tailwind generates these specific classes */
+  html.dark .light .dark\:border-neutral-900 {
+    border-color: #e5e7eb !important;
+  }
+  
+  html.dark .light .dark\:from-neutral-900 {
+    --tw-gradient-from: white !important;
+    --tw-gradient-to: #f9fafb !important;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+  }
+  
+  html.dark .light .dark\:to-neutral-800 {
+    --tw-gradient-to: #f9fafb !important;
+  }
+  
+  html.dark .light .dark\:bg-neutral-900 {
+    background-color: white !important;
+  }
+  
+  /* Force gradient to be light colors inside .light - override dark mode gradients */
+  html.dark .light .bg-gradient-to-br.dark\:from-neutral-900,
+  html.dark .light .bg-gradient-to-br {
+    background: linear-gradient(to bottom right, white, #f9fafb) !important;
+    background-image: linear-gradient(to bottom right, white, #f9fafb) !important;
+  }
+  
+  /* Override any neutral colors in dark mode inside .light */
+  html.dark .light .border-neutral-100 {
+    border-color: #e5e7eb !important;
+  }
+  
+  html.dark .light .from-white {
+    --tw-gradient-from: white !important;
+  }
+  
+  html.dark .light .to-neutral-50 {
+    --tw-gradient-to: #f9fafb !important;
+  }
+  
+  /* Force all backgrounds to be light inside .light */
+  html.dark .light .dark\:bg-neutral-900,
+  html.dark .light [class*="dark:bg-neutral"] {
+    background-color: white !important;
+  }
+  
+  /* Override border colors for MagicCard */
+  html.dark .light .group.border-neutral-100 {
+    border-color: #e5e7eb !important;
+  }
+  
+  /* Override any element with dark: classes inside .light */
+  html.dark .light .dark\:border-neutral-900 {
+    border-color: #e5e7eb !important;
   }
 }
 
@@ -72,4 +299,14 @@ html {
 .animate-gradient {
   animation: gradient 8s linear infinite;
   background-size: var(--bg-size) 100%;
+}
+
+@keyframes border-beam {
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+.animate-border-beam {
+  animation: border-beam calc(var(--duration) * 1s) linear infinite;
 }

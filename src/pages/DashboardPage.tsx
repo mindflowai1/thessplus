@@ -38,10 +38,10 @@ interface Transaction {
   data: string
 }
 
-interface DailyBalance {
-  data: string
-  saldo: number
-}
+// interface DailyBalance {
+//   data: string
+//   saldo: number
+// }
 
 const CATEGORIES = [
   'Alimentação',
@@ -57,7 +57,7 @@ const CATEGORIES = [
 export function DashboardPage() {
   const { user } = useAuth()
   const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [dailyBalances, setDailyBalances] = useState<DailyBalance[]>([])
+  // const [dailyBalances, setDailyBalances] = useState<DailyBalance[]>([]) // Not used
   const [loading, setLoading] = useState(false)
   const [startDate, setStartDate] = useState(
     new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]
@@ -89,16 +89,16 @@ export function DashboardPage() {
 
       if (error) throw error
 
-      const transactions = (data || []).map((tx) => ({
+      const transactions = (data || []).map((tx: any) => ({
         ...tx,
         valor: Number(tx.valor),
       })) as Transaction[]
 
       setTransactions(transactions)
 
-      // Calcular saldos diários
-      const balances = calculateDailyBalances(transactions)
-      setDailyBalances(balances)
+      // Calcular saldos diários (not used currently)
+      // const balances = calculateDailyBalances(transactions)
+      // setDailyBalances(balances) // Not used
     } catch (error) {
       console.error('Error fetching transactions:', error)
     } finally {
@@ -106,28 +106,28 @@ export function DashboardPage() {
     }
   }
 
-  const calculateDailyBalances = (txs: Transaction[]): DailyBalance[] => {
-    const balancesMap = new Map<string, number>()
-    let currentBalance = 0
+  // const calculateDailyBalances = (txs: Transaction[]): DailyBalance[] => {
+  //   const balancesMap = new Map<string, number>()
+  //   let currentBalance = 0
 
-    const sorted = [...txs].sort(
-      (a, b) => new Date(a.data).getTime() - new Date(b.data).getTime()
-    )
+  //   const sorted = [...txs].sort(
+  //     (a, b) => new Date(a.data).getTime() - new Date(b.data).getTime()
+  //   )
 
-    sorted.forEach((tx) => {
-      const date = tx.data.split('T')[0]
-      if (tx.tipo === 'Entrada') {
-        currentBalance += tx.valor
-      } else {
-        currentBalance -= tx.valor
-      }
-      balancesMap.set(date, currentBalance)
-    })
+  //   sorted.forEach((tx) => {
+  //     const date = tx.data.split('T')[0]
+  //     if (tx.tipo === 'Entrada') {
+  //       currentBalance += tx.valor
+  //     } else {
+  //       currentBalance -= tx.valor
+  //     }
+  //     balancesMap.set(date, currentBalance)
+  //   })
 
-    return Array.from(balancesMap.entries())
-      .map(([data, saldo]) => ({ data, saldo }))
-      .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
-  }
+  //   return Array.from(balancesMap.entries())
+  //     .map(([data, saldo]) => ({ data, saldo }))
+  //     .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
+  // }
 
   useEffect(() => {
     if (user) {
@@ -245,15 +245,15 @@ export function DashboardPage() {
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="border-green-200 dark:border-green-900">
+        <Card className="border-blue-200 dark:border-blue-900">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total de Entradas</CardTitle>
-            <div className="h-8 w-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-              <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
+            <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+              <TrendingUp className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
               {formatCurrency(totals.income)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -282,7 +282,7 @@ export function DashboardPage() {
         <Card className={cn(
           "border-2",
           totals.balance >= 0 
-            ? "border-green-200 dark:border-green-900" 
+            ? "border-blue-200 dark:border-blue-900" 
             : "border-red-200 dark:border-red-900"
         )}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -290,13 +290,13 @@ export function DashboardPage() {
             <div className={cn(
               "h-8 w-8 rounded-full flex items-center justify-center",
               totals.balance >= 0
-                ? "bg-green-100 dark:bg-green-900/30"
+                ? "bg-blue-100 dark:bg-blue-900/30"
                 : "bg-red-100 dark:bg-red-900/30"
             )}>
               <Wallet className={cn(
                 "h-4 w-4",
                 totals.balance >= 0
-                  ? "text-green-600 dark:text-green-400"
+                  ? "text-blue-600 dark:text-blue-400"
                   : "text-red-600 dark:text-red-400"
               )} />
             </div>
@@ -305,7 +305,7 @@ export function DashboardPage() {
             <div className={cn(
               "text-2xl font-bold",
               totals.balance >= 0
-                ? "text-green-600 dark:text-green-400"
+                ? "text-blue-600 dark:text-blue-400"
                 : "text-red-600 dark:text-red-400"
             )}>
               {formatCurrency(totals.balance)}
@@ -340,25 +340,37 @@ export function DashboardPage() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Data Inicial</label>
-                <Input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full"
-                />
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground dark:text-gray-200 z-10 pointer-events-none" />
+                  <Input
+                    type="date"
+                    value={startDate}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStartDate(e.target.value)}
+                    className="w-full pl-10 dark:[color-scheme:dark] [color-scheme:light] dark:[color-scheme:dark]"
+                    style={{ 
+                      colorScheme: 'light dark'
+                    } as React.CSSProperties}
+                  />
+                </div>
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Data Final</label>
-                <Input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full"
-                />
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground dark:text-gray-200 z-10 pointer-events-none" />
+                  <Input
+                    type="date"
+                    value={endDate}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEndDate(e.target.value)}
+                    className="w-full pl-10 dark:[color-scheme:dark] [color-scheme:light] dark:[color-scheme:dark]"
+                    style={{ 
+                      colorScheme: 'light dark'
+                    } as React.CSSProperties}
+                  />
+                </div>
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Categoria</label>
-                <Select value={selectedCategory === '__all__' ? undefined : selectedCategory} onValueChange={(value) => setSelectedCategory(value || '__all__')}>
+                <Select value={selectedCategory === '__all__' ? undefined : selectedCategory} onValueChange={(value: string) => setSelectedCategory(value || '__all__')}>
                   <SelectTrigger>
                     <SelectValue placeholder="Todas as categorias" />
                   </SelectTrigger>
@@ -374,11 +386,11 @@ export function DashboardPage() {
               <div className="space-y-2">
                 <label className="text-sm font-medium">Buscar</label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground dark:text-gray-300" />
                   <Input
                     placeholder="Buscar transações..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                     className="pl-9"
                   />
                 </div>
@@ -472,11 +484,11 @@ export function DashboardPage() {
                     <div className={cn(
                       'flex items-center justify-center h-10 w-10 rounded-full flex-shrink-0',
                       transaction.tipo === 'Entrada'
-                        ? 'bg-green-100 dark:bg-green-900/30'
+                        ? 'bg-blue-100 dark:bg-blue-900/30'
                         : 'bg-red-100 dark:bg-red-900/30'
                     )}>
                       {transaction.tipo === 'Entrada' ? (
-                        <ArrowUpCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                        <ArrowUpCircle className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                       ) : (
                         <ArrowDownCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
                       )}
@@ -496,7 +508,7 @@ export function DashboardPage() {
                       className={cn(
                         'font-bold text-lg flex-shrink-0',
                         transaction.tipo === 'Entrada'
-                          ? 'text-green-600 dark:text-green-400'
+                          ? 'text-blue-600 dark:text-blue-400'
                           : 'text-red-600 dark:text-red-400'
                       )}
                     >

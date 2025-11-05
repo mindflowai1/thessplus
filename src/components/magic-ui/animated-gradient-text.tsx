@@ -14,7 +14,7 @@ export function AnimatedGradientText({ children, className }: AnimatedGradientTe
       )}
     >
       <div
-        className="absolute inset-0 block h-full w-full animate-gradient bg-gradient-to-r from-green-500 via-emerald-500 to-green-500 bg-[length:var(--bg-size)_100%] p-[1px] rounded-[inherit]"
+        className="absolute inset-0 block h-full w-full animate-gradient bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 bg-[length:var(--bg-size)_100%] p-[1px] rounded-[inherit]"
         style={{
           maskImage: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
           maskComposite: 'subtract',

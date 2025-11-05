@@ -3,6 +3,7 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { AppLayout } from '@/components/AppLayout'
+import { PageTransition } from '@/components/PageTransition'
 import { LandingPage } from '@/pages/LandingPage'
 import { AuthPage } from '@/pages/AuthPage'
 import { DashboardPage } from '@/pages/DashboardPage'
@@ -62,12 +63,22 @@ function App() {
       <ThemeProvider>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/" element={
+              <PageTransition>
+                <LandingPage />
+              </PageTransition>
+            } />
+            <Route path="/auth" element={
+              <PageTransition>
+                <AuthPage />
+              </PageTransition>
+            } />
             <Route
               element={
                 <ProtectedRoute>
-                  <AppLayout />
+                  <PageTransition>
+                    <AppLayout />
+                  </PageTransition>
                 </ProtectedRoute>
               }
             >

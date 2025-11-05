@@ -1,4 +1,4 @@
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/contexts/ThemeContext'
 import { Sidebar } from '@/components/Sidebar'
@@ -11,15 +11,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Moon, Sun, Menu, X, Settings, Sparkles, LogOut } from 'lucide-react'
-import { useState } from 'react'
-import { cn } from '@/lib/utils'
+import { Moon, Sun, Menu, X, Settings, LogOut, LayoutDashboard, Calendar, TrendingUp } from 'lucide-react'
+import { useState, useMemo } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export function AppLayout() {
   const { user, userProfile, signOut } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
+  const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  
+  // Mapeamento de rotas para nomes e ícones
+  const pageInfo = useMemo(() => {
+    const routeMap: Record<string, { name: string; icon: typeof LayoutDashboard }> = {
+      '/dashboard': { name: 'Dashboard', icon: LayoutDashboard },
+      '/calendar': { name: 'Agenda', icon: Calendar },
+      '/limits': { name: 'Limites', icon: TrendingUp },
+      '/account': { name: 'Configurações', icon: Settings },
+    }
+    return routeMap[location.pathname] || { name: 'Dashboard', icon: LayoutDashboard }
+  }, [location.pathname])
+  
+  const PageIcon = pageInfo.icon
 
   const handleSignOut = async () => {
     try {
@@ -52,22 +66,36 @@ export function AppLayout() {
       </div>
 
       {/* Mobile Sidebar Overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Mobile Sidebar */}
-      <aside
-        className={cn(
-          'fixed inset-y-0 left-0 z-50 w-64 bg-background border-r transform transition-transform duration-300 ease-in-out md:hidden',
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        )}
+      <motion.aside
+        initial={{ x: '-100%' }}
+        animate={{ x: sidebarOpen ? 0 : '-100%' }}
+        transition={{ 
+          type: 'spring', 
+          damping: 30, 
+          stiffness: 300,
+          mass: 0.8
+        }}
+        className="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] bg-background border-r shadow-2xl md:hidden overflow-y-auto"
+        style={{ 
+          boxShadow: '4px 0 24px rgba(0, 0, 0, 0.15)'
+        }}
       >
         <Sidebar />
-      </aside>
+      </motion.aside>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
@@ -88,14 +116,10 @@ export function AppLayout() {
               )}
             </Button>
 
-            {/* Logo - Always visible on desktop */}
+            {/* Page Title - Always visible on desktop */}
             <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-                <Sparkles className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                Thess+
-              </span>
+              <PageIcon className="h-5 w-5 text-primary" />
+              <h1 className="text-lg font-semibold text-foreground">{pageInfo.name}</h1>
             </div>
 
             <div className="flex items-center space-x-3 ml-auto">
@@ -120,7 +144,7 @@ export function AppLayout() {
                     className="relative h-9 px-2 rounded-full hover:bg-muted"
                   >
                     <div className="flex items-center space-x-2">
-                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white text-xs font-semibold">
+                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-xs font-semibold">
                         {getUserInitials()}
                       </div>
                       <span className="hidden sm:inline-block text-sm font-medium max-w-[150px] truncate">

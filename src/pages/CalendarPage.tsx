@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { formatDate } from '@/lib/utils'
 import {
@@ -13,7 +13,6 @@ import {
   Users,
   ExternalLink,
   CalendarDays,
-  ChevronRight,
   AlertCircle,
 } from 'lucide-react'
 import { listReminders } from '@/services/googleCalendar'
@@ -279,7 +278,7 @@ export function CalendarPage() {
           <Button 
             size="sm"
             onClick={() => setCreateEventOpen(true)}
-            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+            className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800"
           >
             <Plus className="h-4 w-4 mr-2" />
             Novo Evento
@@ -293,7 +292,7 @@ export function CalendarPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Próximos Eventos</CardTitle>
-              <CalendarDays className="h-4 w-4 text-muted-foreground" />
+              <CalendarDays className="h-4 w-4 text-muted-foreground dark:text-gray-300" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{upcomingEvents.length}</div>
@@ -303,7 +302,7 @@ export function CalendarPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Eventos Passados</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
+              <Clock className="h-4 w-4 text-muted-foreground dark:text-gray-300" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{pastEvents.length}</div>
@@ -313,7 +312,7 @@ export function CalendarPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total de Eventos</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <Calendar className="h-4 w-4 text-muted-foreground dark:text-gray-300" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{events.length}</div>
@@ -401,7 +400,7 @@ export function CalendarPage() {
       {!loading && !error && events.length === 0 && (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <Calendar className="h-12 w-12 text-muted-foreground mb-4" />
+            <Calendar className="h-12 w-12 text-muted-foreground dark:text-gray-300 mb-4" />
             <h3 className="text-lg font-semibold mb-2">Nenhum evento encontrado</h3>
             <p className="text-sm text-muted-foreground mb-4">
               Você ainda não tem eventos no Google Calendar para este período.
@@ -409,7 +408,7 @@ export function CalendarPage() {
             <Button 
               size="sm"
               onClick={() => setCreateEventOpen(true)}
-              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+              className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800"
             >
               <Plus className="h-4 w-4 mr-2" />
               Criar Primeiro Evento
@@ -421,11 +420,11 @@ export function CalendarPage() {
       {/* Upcoming Events */}
       {upcomingEvents.length > 0 && (
         <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-semibold">Próximos Eventos</h2>
-            <span className="text-sm text-muted-foreground">{upcomingEvents.length} evento(s)</span>
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <h2 className="text-xl sm:text-2xl font-semibold">Próximos Eventos</h2>
+            <span className="text-xs sm:text-sm text-muted-foreground">{upcomingEvents.length} evento(s)</span>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-3 sm:space-y-4">
             {upcomingEvents.map((event) => {
               const daysUntil = getDaysUntilEvent(event)
               const endTime = formatEventEndTime(event)
@@ -438,73 +437,78 @@ export function CalendarPage() {
                   className={cn(
                     'hover:shadow-lg transition-all cursor-pointer border-l-4',
                     isToday
-                      ? 'border-l-green-500 bg-green-50/50 dark:bg-green-950/20'
+                      ? 'border-l-blue-500 bg-blue-50/50 dark:bg-blue-950/20'
                       : 'border-l-blue-500 hover:border-l-blue-600'
                   )}
                 >
-                  <CardHeader>
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start gap-3 mb-3">
+                  <CardHeader className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-4">
+                      <div className="flex-1 min-w-0 w-full sm:w-auto">
+                        <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
                           <div
                             className={cn(
-                              'h-12 w-12 rounded-lg flex items-center justify-center flex-shrink-0',
+                              'h-10 w-10 sm:h-12 sm:w-12 rounded-lg flex items-center justify-center flex-shrink-0',
                               isToday
-                                ? 'bg-green-100 dark:bg-green-900/30'
+                                ? 'bg-blue-100 dark:bg-blue-900/30'
                                 : 'bg-blue-100 dark:bg-blue-900/30'
                             )}
                           >
                             <Calendar
                               className={cn(
-                                'h-6 w-6',
-                                isToday ? 'text-green-600 dark:text-green-400' : 'text-blue-600 dark:text-blue-400'
+                                'h-5 w-5 sm:h-6 sm:w-6',
+                                isToday ? 'text-blue-600 dark:text-blue-400' : 'text-blue-600 dark:text-blue-400'
                               )}
                             />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <CardTitle className="text-lg mb-1 truncate">{event.summary}</CardTitle>
-                            <div className="flex items-center gap-4 flex-wrap text-sm text-muted-foreground">
+                            <CardTitle className="text-base sm:text-lg mb-2 sm:mb-1 truncate">{event.summary}</CardTitle>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 flex-wrap text-xs sm:text-sm text-muted-foreground">
                               <div className="flex items-center gap-2">
-                                <Clock className="h-4 w-4" />
-                                <span className="font-medium">{formatEventDate(event)}</span>
+                                <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground dark:text-gray-300 flex-shrink-0" />
+                                <span className="font-medium text-sm sm:text-base">{formatEventDate(event)}</span>
                                 {endTime && (
                                   <>
-                                    <span>—</span>
-                                    <span>{endTime}</span>
+                                    <span className="hidden sm:inline">—</span>
+                                    <span className="sm:hidden block">às</span>
+                                    <span className="text-sm sm:text-base">{endTime}</span>
                                   </>
                                 )}
                                 {duration && (
                                   <>
-                                    <span className="mx-1">•</span>
-                                    <span>{duration}</span>
+                                    <span className="mx-1 hidden sm:inline">•</span>
+                                    <span className="text-xs sm:text-sm">{duration}</span>
                                   </>
                                 )}
                               </div>
-                              {daysUntil !== null && daysUntil > 0 && (
-                                <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full">
-                                  {daysUntil === 1 ? 'Amanhã' : `Em ${daysUntil} dias`}
-                                </span>
-                              )}
-                              {isToday && (
-                                <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full font-medium">
-                                  Hoje
-                                </span>
-                              )}
+                              {(daysUntil !== null && daysUntil > 0) || isToday ? (
+                                <div className="flex gap-2 flex-wrap">
+                                  {daysUntil !== null && daysUntil > 0 && (
+                                    <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2.5 py-1 rounded-full">
+                                      {daysUntil === 1 ? 'Amanhã' : `Em ${daysUntil} dias`}
+                                    </span>
+                                  )}
+                                  {isToday && (
+                                    <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2.5 py-1 rounded-full font-medium">
+                                      Hoje
+                                    </span>
+                                  )}
+                                </div>
+                              ) : null}
                             </div>
                           </div>
                         </div>
 
                         {(event.location || (event.attendees && event.attendees.length > 0)) && (
-                          <div className="flex flex-wrap gap-4 mt-3 text-sm text-muted-foreground">
+                          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4 mt-3 sm:mt-4 text-xs sm:text-sm text-muted-foreground">
                             {event.location && (
                               <div className="flex items-center gap-2">
-                                <MapPin className="h-4 w-4" />
-                                <span className="truncate max-w-xs">{event.location}</span>
+                                <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground dark:text-gray-300 flex-shrink-0" />
+                                <span className="truncate max-w-[200px] sm:max-w-xs">{event.location}</span>
                               </div>
                             )}
                             {event.attendees && event.attendees.length > 0 && (
                               <div className="flex items-center gap-2">
-                                <Users className="h-4 w-4" />
+                                <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground dark:text-gray-300 flex-shrink-0" />
                                 <span>
                                   {event.attendees.length} participante{event.attendees.length > 1 ? 's' : ''}
                                 </span>
@@ -514,14 +518,14 @@ export function CalendarPage() {
                         )}
 
                         {event.description && (
-                          <p className="text-sm text-muted-foreground mt-3 line-clamp-2">{event.description}</p>
+                          <p className="text-xs sm:text-sm text-muted-foreground mt-3 sm:mt-4 line-clamp-2 leading-relaxed">{event.description}</p>
                         )}
                       </div>
 
                       {event.htmlLink && (
-                        <Button variant="outline" size="sm" asChild className="flex-shrink-0">
+                        <Button variant="outline" size="sm" asChild className="flex-shrink-0 w-full sm:w-auto mt-3 sm:mt-0">
                           <a href={event.htmlLink} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-4 w-4 mr-2" />
+                            <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2" />
                             Abrir
                           </a>
                         </Button>
@@ -538,40 +542,41 @@ export function CalendarPage() {
       {/* Past Events */}
       {pastEvents.length > 0 && (
         <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-semibold">Eventos Passados</h2>
-            <span className="text-sm text-muted-foreground">{pastEvents.length} evento(s)</span>
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <h2 className="text-xl sm:text-2xl font-semibold">Eventos Passados</h2>
+            <span className="text-xs sm:text-sm text-muted-foreground">{pastEvents.length} evento(s)</span>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-3 sm:space-y-4">
             {pastEvents.slice(0, 10).map((event) => {
               const endTime = formatEventEndTime(event)
               const duration = getEventDuration(event)
 
               return (
                 <Card key={event.id} className="opacity-70 hover:opacity-100 transition-opacity border-l-4 border-l-gray-300">
-                  <CardHeader>
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start gap-3 mb-3">
-                          <div className="h-12 w-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0">
-                            <Calendar className="h-6 w-6 text-gray-500" />
+                  <CardHeader className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-4">
+                      <div className="flex-1 min-w-0 w-full sm:w-auto">
+                        <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
+                          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0">
+                            <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-gray-500 dark:text-gray-300" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <CardTitle className="text-lg mb-1 truncate">{event.summary}</CardTitle>
-                            <div className="flex items-center gap-4 flex-wrap text-sm text-muted-foreground">
+                            <CardTitle className="text-base sm:text-lg mb-2 sm:mb-1 truncate">{event.summary}</CardTitle>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 flex-wrap text-xs sm:text-sm text-muted-foreground">
                               <div className="flex items-center gap-2">
-                                <Clock className="h-4 w-4" />
-                                <span>{formatEventDate(event)}</span>
+                                <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground dark:text-gray-300 flex-shrink-0" />
+                                <span className="text-sm sm:text-base">{formatEventDate(event)}</span>
                                 {endTime && (
                                   <>
-                                    <span>—</span>
-                                    <span>{endTime}</span>
+                                    <span className="hidden sm:inline">—</span>
+                                    <span className="sm:hidden block">às</span>
+                                    <span className="text-sm sm:text-base">{endTime}</span>
                                   </>
                                 )}
                                 {duration && (
                                   <>
-                                    <span className="mx-1">•</span>
-                                    <span>{duration}</span>
+                                    <span className="mx-1 hidden sm:inline">•</span>
+                                    <span className="text-xs sm:text-sm">{duration}</span>
                                   </>
                                 )}
                               </div>
@@ -580,16 +585,16 @@ export function CalendarPage() {
                         </div>
 
                         {(event.location || (event.attendees && event.attendees.length > 0)) && (
-                          <div className="flex flex-wrap gap-4 mt-3 text-sm text-muted-foreground">
+                          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4 mt-3 sm:mt-4 text-xs sm:text-sm text-muted-foreground">
                             {event.location && (
                               <div className="flex items-center gap-2">
-                                <MapPin className="h-4 w-4" />
-                                <span className="truncate max-w-xs">{event.location}</span>
+                                <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground dark:text-gray-300 flex-shrink-0" />
+                                <span className="truncate max-w-[200px] sm:max-w-xs">{event.location}</span>
                               </div>
                             )}
                             {event.attendees && event.attendees.length > 0 && (
                               <div className="flex items-center gap-2">
-                                <Users className="h-4 w-4" />
+                                <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground dark:text-gray-300 flex-shrink-0" />
                                 <span>
                                   {event.attendees.length} participante{event.attendees.length > 1 ? 's' : ''}
                                 </span>
@@ -600,9 +605,9 @@ export function CalendarPage() {
                       </div>
 
                       {event.htmlLink && (
-                        <Button variant="ghost" size="sm" asChild className="flex-shrink-0">
+                        <Button variant="ghost" size="sm" asChild className="flex-shrink-0 w-full sm:w-auto mt-3 sm:mt-0">
                           <a href={event.htmlLink} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-4 w-4 mr-2" />
+                            <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2 dark:text-gray-300" />
                             Ver
                           </a>
                         </Button>

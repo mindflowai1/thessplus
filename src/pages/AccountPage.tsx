@@ -10,7 +10,7 @@ export function AccountPage() {
   const { user, userProfile, refreshUserProfile } = useAuth()
   const [fullName, setFullName] = useState('')
   const [phone, setPhone] = useState('')
-  const [currentPassword, setCurrentPassword] = useState('')
+  // const [currentPassword, setCurrentPassword] = useState('') // Not used
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [saving, setSaving] = useState(false)
@@ -87,7 +87,7 @@ export function AccountPage() {
 
       if (error) throw error
 
-      setCurrentPassword('')
+      // setCurrentPassword('') // Not used
       setNewPassword('')
       setConfirmPassword('')
       setMessage({ type: 'success', text: 'Senha atualizada com sucesso!' })
@@ -113,7 +113,7 @@ export function AccountPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <User className="h-5 w-5" />
+            <User className="h-5 w-5 dark:text-gray-200" />
             <span>Informações do Perfil</span>
           </CardTitle>
           <CardDescription>Atualize suas informações pessoais</CardDescription>
@@ -122,7 +122,7 @@ export function AccountPage() {
           <div className="space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-medium flex items-center space-x-2">
-                <Mail className="h-4 w-4" />
+                <Mail className="h-4 w-4 dark:text-gray-300" />
                 <span>E-mail</span>
               </label>
               <Input type="email" value={user?.email || ''} disabled />
@@ -132,25 +132,25 @@ export function AccountPage() {
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium flex items-center space-x-2">
-                <User className="h-4 w-4" />
+                <User className="h-4 w-4 dark:text-gray-300" />
                 <span>Nome Completo</span>
               </label>
               <Input
                 type="text"
                 value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFullName(e.target.value)}
                 placeholder="Seu nome completo"
               />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium flex items-center space-x-2">
-                <Phone className="h-4 w-4" />
+                <Phone className="h-4 w-4 dark:text-gray-300" />
                 <span>Telefone</span>
               </label>
               <Input
                 type="tel"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhone(e.target.value)}
                 placeholder="(31) 99999-9999"
               />
               <p className="text-xs text-muted-foreground">
@@ -161,7 +161,7 @@ export function AccountPage() {
               <div
                 className={`p-3 rounded-lg text-sm ${
                   message.type === 'success'
-                    ? 'bg-green-50 text-green-800 dark:bg-green-950 dark:text-green-200'
+                    ? 'bg-blue-50 text-blue-800 dark:bg-blue-950 dark:text-blue-200'
                     : 'bg-red-50 text-red-800 dark:bg-red-950 dark:text-red-200'
                 }`}
               >
@@ -176,7 +176,7 @@ export function AccountPage() {
                 </>
               ) : (
                 <>
-                  <Save className="h-4 w-4 mr-2" />
+                  <Save className="h-4 w-4 mr-2 dark:text-gray-200" />
                   Salvar Alterações
                 </>
               )}
@@ -189,7 +189,7 @@ export function AccountPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Lock className="h-5 w-5" />
+            <Lock className="h-5 w-5 dark:text-gray-200" />
             <span>Alterar Senha</span>
           </CardTitle>
           <CardDescription>Atualize sua senha de acesso</CardDescription>
@@ -201,7 +201,7 @@ export function AccountPage() {
               <Input
                 type="password"
                 value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewPassword(e.target.value)}
                 placeholder="••••••••"
                 minLength={6}
               />
@@ -211,7 +211,7 @@ export function AccountPage() {
               <Input
                 type="password"
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
                 minLength={6}
               />
@@ -224,7 +224,7 @@ export function AccountPage() {
                 </>
               ) : (
                 <>
-                  <Lock className="h-4 w-4 mr-2" />
+                  <Lock className="h-4 w-4 mr-2 dark:text-gray-300" />
                   Alterar Senha
                 </>
               )}

@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { supabase } from '@/services/supabase'
 import { Loader2, ArrowLeft, Sparkles } from 'lucide-react'
+import { AuthTransition } from '@/components/AuthTransition'
 
 export function AuthPage() {
   const [isLogin, setIsLogin] = useState(true)
@@ -13,12 +14,17 @@ export function AuthPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isTransitioning, setIsTransitioning] = useState(false)
   const { signInWithGoogle, user } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
     if (user) {
-      navigate('/dashboard')
+      setIsTransitioning(true)
+      // Delay para mostrar a animação antes de navegar
+      setTimeout(() => {
+        navigate('/dashboard')
+      }, 2000)
     }
   }, [user, navigate])
 
@@ -34,7 +40,11 @@ export function AuthPage() {
           password,
         })
         if (error) throw error
-        navigate('/dashboard')
+        setIsTransitioning(true)
+        // Delay para mostrar a animação antes de navegar
+        setTimeout(() => {
+          navigate('/dashboard')
+        }, 2000)
       } else {
         const { error } = await supabase.auth.signUp({
           email,
@@ -55,6 +65,7 @@ export function AuthPage() {
     setError(null)
     try {
       await signInWithGoogle()
+      setIsTransitioning(true)
     } catch (error: any) {
       setError(error.message || 'Erro ao autenticar com Google')
       setLoading(false)
@@ -62,7 +73,8 @@ export function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4 relative">
+    <AuthTransition isTransitioning={isTransitioning}>
+      <div className="min-h-screen flex items-center justify-center bg-background p-4 relative">
       {/* Back Button */}
       <Link 
         to="/" 
@@ -75,10 +87,10 @@ export function AuthPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-3">
           <Link to="/" className="flex items-center justify-center space-x-2 group">
-            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center group-hover:scale-105 transition-transform">
               <Sparkles className="h-6 w-6 text-white" />
             </div>
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
               Thess+
             </CardTitle>
           </Link>
@@ -97,7 +109,7 @@ export function AuthPage() {
                 type="email"
                 placeholder="seu@email.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                 required
               />
             </div>
@@ -110,7 +122,7 @@ export function AuthPage() {
                 type="password"
                 placeholder="••••••••"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                 required
                 minLength={6}
               />
@@ -178,6 +190,7 @@ export function AuthPage() {
         </CardContent>
       </Card>
     </div>
+    </AuthTransition>
   )
 }
 

@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label'
 import { Calendar, Clock, MapPin, FileText, Loader2, Bell, CheckCircle2 } from 'lucide-react'
 import { createReminder } from '@/services/googleCalendar'
 import { supabase } from '@/services/supabase'
-import { cn } from '@/lib/utils'
 
 interface CreateEventDialogProps {
   open: boolean
@@ -134,8 +133,8 @@ export function CreateEventDialog({ open, onOpenChange, onEventCreated }: Create
 
         {success ? (
           <div className="flex flex-col items-center justify-center py-8">
-            <div className="h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-4">
-              <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
+            <div className="h-16 w-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
+              <CheckCircle2 className="h-8 w-8 text-blue-600 dark:text-blue-400" />
             </div>
             <h3 className="text-lg font-semibold mb-2">Evento Criado!</h3>
             <p className="text-sm text-muted-foreground text-center">
@@ -154,7 +153,7 @@ export function CreateEventDialog({ open, onOpenChange, onEventCreated }: Create
                 id="title"
                 placeholder="Ex: Reunião com cliente"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
                 disabled={loading}
                 className="text-base"
                 required
@@ -170,7 +169,7 @@ export function CreateEventDialog({ open, onOpenChange, onEventCreated }: Create
                 id="description"
                 placeholder="Adicione detalhes sobre o evento..."
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
                 disabled={loading}
                 rows={3}
                 className="resize-none"
@@ -193,7 +192,7 @@ export function CreateEventDialog({ open, onOpenChange, onEventCreated }: Create
                     id="date"
                     type="date"
                     value={date}
-                    onChange={(e) => setDate(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDate(e.target.value)}
                     disabled={loading}
                     required
                     className="mt-1"
@@ -227,7 +226,7 @@ export function CreateEventDialog({ open, onOpenChange, onEventCreated }: Create
                       id="startTime"
                       type="time"
                       value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStartTime(e.target.value)}
                       disabled={loading}
                       className="mt-1"
                     />
@@ -241,7 +240,7 @@ export function CreateEventDialog({ open, onOpenChange, onEventCreated }: Create
                       id="endTime"
                       type="time"
                       value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEndTime(e.target.value)}
                       disabled={loading}
                       className="mt-1"
                     />
@@ -260,7 +259,7 @@ export function CreateEventDialog({ open, onOpenChange, onEventCreated }: Create
                 id="location"
                 placeholder="Ex: Sala de reuniões, Zoom, etc."
                 value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLocation(e.target.value)}
                 disabled={loading}
               />
             </div>
@@ -299,7 +298,7 @@ export function CreateEventDialog({ open, onOpenChange, onEventCreated }: Create
               <Button
                 type="submit"
                 disabled={loading || !title.trim()}
-                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800"
               >
                 {loading ? (
                   <>

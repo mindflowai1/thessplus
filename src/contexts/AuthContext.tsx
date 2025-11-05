@@ -140,13 +140,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     try {
+      // Verifica se já existe um refresh token salvo
+      const savedGoogleRefreshToken = localStorage.getItem('google_refresh_token')
+      
+      // Se já tem refresh token, usa 'select_account' para manter sessão ativa
+      // Se não tem, usa 'consent' para solicitar permissão
+      const prompt = savedGoogleRefreshToken ? 'select_account' : 'consent'
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/dashboard`,
           queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
+            access_type: 'offline', // Garante que recebemos refresh token
+            prompt: prompt, // 'select_account' mantém sessão, 'consent' solicita nova permissão
           },
           scopes: 'https://www.googleapis.com/auth/calendar',
         },
@@ -161,6 +168,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     try {
+      // Salva o refresh token do Google antes de fazer logout
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.provider_refresh_token) {
+        localStorage.setItem('google_refresh_token', session.provider_refresh_token)
+      }
+      
       setUserProfile(null)
       const { error } = await supabase.auth.signOut()
       if (error) throw error
@@ -177,6 +190,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null)
       setLoading(false)
       
+      // Salva refresh token do Google se existir
+      if (session?.provider_refresh_token) {
+        localStorage.setItem('google_refresh_token', session.provider_refresh_token)
+      }
+      
       // Busca perfil em background (não bloqueia o loading)
       if (session?.user) {
         fetchUserProfile(session.user.id, session.user)
@@ -186,11 +204,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Escuta mudanças de autenticação
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event: string, session: Session | null) => {
       setSession(session)
       setUser(session?.user ?? null)
       
       if (session?.user) {
+        // Salva o refresh token do Google quando autenticar
+        if (session.provider_refresh_token) {
+          localStorage.setItem('google_refresh_token', session.provider_refresh_token)
+        }
+        
         // Busca perfil em background
         fetchUserProfile(session.user.id, session.user)
       } else {

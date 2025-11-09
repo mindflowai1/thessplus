@@ -13,10 +13,15 @@ ARG VITE_PERFECTPAY_PRODUCT_ID
 ARG VITE_PERFECTPAY_API_URL
 
 # Definir variáveis de ambiente para o build
-ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
-ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
-ENV VITE_PERFECTPAY_PRODUCT_ID=$VITE_PERFECTPAY_PRODUCT_ID
-ENV VITE_PERFECTPAY_API_URL=$VITE_PERFECTPAY_API_URL
+# Usar valores padrão vazios se não fornecidos
+ENV VITE_SUPABASE_URL=${VITE_SUPABASE_URL:-}
+ENV VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY:-}
+ENV VITE_PERFECTPAY_PRODUCT_ID=${VITE_PERFECTPAY_PRODUCT_ID:-}
+ENV VITE_PERFECTPAY_API_URL=${VITE_PERFECTPAY_API_URL:-https://app.perfectpay.com.br}
+
+# Debug: mostrar variáveis (remover em produção se necessário)
+RUN echo "VITE_SUPABASE_URL is set: $([ -n "$VITE_SUPABASE_URL" ] && echo 'yes' || echo 'no')"
+RUN echo "VITE_SUPABASE_ANON_KEY is set: $([ -n "$VITE_SUPABASE_ANON_KEY" ] && echo 'yes' || echo 'no')"
 
 # Copiar arquivos de dependências
 COPY package.json package-lock.json* ./

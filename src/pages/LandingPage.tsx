@@ -762,7 +762,7 @@ export function LandingPage() {
 
                 {/* CTA Button */}
                 <div className="text-center pt-4 sm:pt-6 border-t border-gray-200">
-                  <Link to="/auth" className="inline-block w-full sm:w-auto">
+                  <Link to="/checkout" className="inline-block w-full sm:w-auto">
                     <Button
                       size="lg"
                       className="w-full sm:w-auto text-base sm:text-lg px-8 sm:px-12 py-5 sm:py-6 bg-amber-500 hover:bg-amber-600 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"

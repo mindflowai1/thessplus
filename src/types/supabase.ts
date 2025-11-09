@@ -13,7 +13,7 @@ export interface Database {
           subscription_start_date?: string | null
           subscription_end_date?: string | null
           subscription_renewal_date?: string | null
-          payment_provider?: 'stripe' | 'mercadopago' | 'asaas' | 'pagar_me' | null
+          payment_provider?: 'stripe' | 'mercadopago' | 'asaas' | 'pagar_me' | 'perfectpay' | null
           payment_customer_id?: string | null
           payment_subscription_id?: string | null
           trial_end_date?: string | null
@@ -29,7 +29,7 @@ export interface Database {
           subscription_start_date?: string | null
           subscription_end_date?: string | null
           subscription_renewal_date?: string | null
-          payment_provider?: 'stripe' | 'mercadopago' | 'asaas' | 'pagar_me' | null
+          payment_provider?: 'stripe' | 'mercadopago' | 'asaas' | 'pagar_me' | 'perfectpay' | null
           payment_customer_id?: string | null
           payment_subscription_id?: string | null
           trial_end_date?: string | null
@@ -45,7 +45,7 @@ export interface Database {
           subscription_start_date?: string | null
           subscription_end_date?: string | null
           subscription_renewal_date?: string | null
-          payment_provider?: 'stripe' | 'mercadopago' | 'asaas' | 'pagar_me' | null
+          payment_provider?: 'stripe' | 'mercadopago' | 'asaas' | 'pagar_me' | 'perfectpay' | null
           payment_customer_id?: string | null
           payment_subscription_id?: string | null
           trial_end_date?: string | null

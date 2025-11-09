@@ -6,6 +6,7 @@ import { AppLayout } from '@/components/AppLayout'
 import { PageTransition } from '@/components/PageTransition'
 import { LandingPage } from '@/pages/LandingPage'
 import { AuthPage } from '@/pages/AuthPage'
+import { CheckoutPage } from '@/pages/CheckoutPage'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { CalendarPage } from '@/pages/CalendarPage'
 import { LimitsPage } from '@/pages/LimitsPage'
@@ -71,6 +72,11 @@ function App() {
             <Route path="/auth" element={
               <PageTransition>
                 <AuthPage />
+              </PageTransition>
+            } />
+            <Route path="/checkout" element={
+              <PageTransition>
+                <CheckoutPage />
               </PageTransition>
             } />
             <Route

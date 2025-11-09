@@ -1,22 +1,43 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
+import { useTheme } from '@/contexts/ThemeContext'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { supabase } from '@/services/supabase'
-import { Loader2, ArrowLeft, Sparkles } from 'lucide-react'
+import { Loader2, ArrowLeft } from 'lucide-react'
 import { AuthTransition } from '@/components/AuthTransition'
+// Importar logos - usar caminhos absolutos para garantir funcionamento em produção
+import logoLight from '@/assets/Logo1.png'
+import logoDark from '@/assets/Logo 2.png'
+
+// Fallback: usar logo do public se os imports falharem
+const FALLBACK_LOGO = '/logo.png'
 
 export function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const { signInWithGoogle, user } = useAuth()
+  const { theme } = useTheme()
   const navigate = useNavigate()
+  
+  // Garantir que o logo seja atualizado quando o tema mudar
+  // Usar fallback se os imports não funcionarem
+  const logo = theme === 'dark' 
+    ? (logoDark || FALLBACK_LOGO) 
+    : (logoLight || FALLBACK_LOGO)
+  
+  // Debug: verificar tema e logo atual
+  useEffect(() => {
+    console.log('Theme changed:', theme)
+    console.log('Logo URL:', logo)
+    console.log('Logo Light:', logoLight)
+    console.log('Logo Dark:', logoDark)
+  }, [theme, logo])
 
   useEffect(() => {
     if (user) {
@@ -34,27 +55,19 @@ export function AuthPage() {
     setError(null)
 
     try {
-      if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        })
-        if (error) throw error
-        setIsTransitioning(true)
-        // Delay para mostrar a animação antes de navegar
-        setTimeout(() => {
-          navigate('/dashboard')
-        }, 2000)
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        })
-        if (error) throw error
-        setError('Verifique seu email para confirmar sua conta')
-      }
+      // Apenas login - cadastro é feito após pagamento
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+      if (error) throw error
+      setIsTransitioning(true)
+      // Delay para mostrar a animação antes de navegar
+      setTimeout(() => {
+        navigate('/dashboard')
+      }, 2000)
     } catch (error: any) {
-      setError(error.message || 'Erro ao autenticar')
+      setError(error.message || 'Erro ao fazer login')
     } finally {
       setLoading(false)
     }
@@ -87,15 +100,28 @@ export function AuthPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-3">
           <Link to="/" className="flex items-center justify-center space-x-2 group">
-            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center group-hover:scale-105 transition-transform">
-              <Sparkles className="h-6 w-6 text-white" />
-            </div>
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
-              Thess+
-            </CardTitle>
+            <img 
+              src={logo} 
+              alt="Thess+" 
+              key={`${theme}-${logo}`} // Forçar re-render quando o tema ou logo mudar
+              className="h-12 w-auto group-hover:scale-105 transition-transform" 
+              onError={(e) => {
+                console.error('Erro ao carregar logo:', logo)
+                console.error('Tema atual:', theme)
+                console.error('Logo Light:', logoLight)
+                console.error('Logo Dark:', logoDark)
+                // Fallback para logo do public
+                if (e.currentTarget.src !== FALLBACK_LOGO) {
+                  e.currentTarget.src = FALLBACK_LOGO
+                }
+              }}
+              onLoad={() => {
+                console.log('Logo carregado com sucesso:', logo)
+              }}
+            />
           </Link>
           <CardDescription className="text-center">
-            {isLogin ? 'Entre na sua conta' : 'Crie sua conta'}
+            Entre na sua conta
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -134,7 +160,7 @@ export function AuthPage() {
             )}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isLogin ? 'Entrar' : 'Criar conta'}
+              Entrar
             </Button>
           </form>
 
@@ -176,16 +202,21 @@ export function AuthPage() {
             Continuar com Google
           </Button>
 
-          <div className="mt-4 text-center text-sm">
-            <button
+          <div className="mt-4 text-center text-sm space-y-2">
+            <p className="text-muted-foreground">
+              Não tem uma conta?
+            </p>
+            <Button
               type="button"
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-primary hover:underline"
+              variant="outline"
+              onClick={() => navigate('/checkout')}
+              className="w-full"
             >
-              {isLogin
-                ? 'Não tem uma conta? Criar conta'
-                : 'Já tem uma conta? Fazer login'}
-            </button>
+              Assinar agora
+            </Button>
+            <p className="text-xs text-muted-foreground mt-2">
+              Sua conta será criada automaticamente após o pagamento ser aprovado
+            </p>
           </div>
         </CardContent>
       </Card>

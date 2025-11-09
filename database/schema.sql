@@ -229,7 +229,7 @@ ADD COLUMN IF NOT EXISTS subscription_plan TEXT DEFAULT 'free' CHECK (subscripti
 ADD COLUMN IF NOT EXISTS subscription_start_date TIMESTAMPTZ,
 ADD COLUMN IF NOT EXISTS subscription_end_date TIMESTAMPTZ,
 ADD COLUMN IF NOT EXISTS subscription_renewal_date TIMESTAMPTZ,
-ADD COLUMN IF NOT EXISTS payment_provider TEXT CHECK (payment_provider IN ('stripe', 'mercadopago', 'asaas', 'pagar_me', NULL)),
+ADD COLUMN IF NOT EXISTS payment_provider TEXT CHECK (payment_provider IN ('stripe', 'mercadopago', 'asaas', 'pagar_me', 'perfectpay', NULL)),
 ADD COLUMN IF NOT EXISTS payment_customer_id TEXT,
 ADD COLUMN IF NOT EXISTS payment_subscription_id TEXT,
 ADD COLUMN IF NOT EXISTS trial_end_date TIMESTAMPTZ;

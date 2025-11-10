@@ -46,13 +46,30 @@ export async function handlePerfectPayWebhook(
   email?: string
 }> {
   try {
-    // Extrai email do webhook (pode vir em custom ou email)
-    const email = webhookData.email || webhookData.custom
-    const name = webhookData.name || webhookData.customer_name
-    const transactionId = webhookData.transaction_id
+    // Log dos dados recebidos para debug
+    console.log('Webhook data received:', JSON.stringify(webhookData, null, 2))
+    
+    // Extrai email do webhook (pode vir em vários campos diferentes)
+    const email = webhookData.email || 
+                  webhookData.custom || 
+                  webhookData.customer_email ||
+                  webhookData.buyer_email
+    
+    const name = webhookData.name || 
+                 webhookData.customer_name || 
+                 webhookData.buyer_name ||
+                 webhookData.full_name
+    
+    const transactionId = webhookData.transaction_id || 
+                         webhookData.id || 
+                         webhookData.payment_id
+    
     const status = webhookData.status?.toLowerCase()
 
+    console.log('Extracted data:', { email, name, transactionId, status })
+
     if (!email) {
+      console.error('Email not found in webhook data. Available fields:', Object.keys(webhookData))
       return {
         success: false,
         message: 'Email não encontrado nos dados do webhook',
@@ -96,17 +113,70 @@ export async function handlePerfectPayWebhook(
           email: userResult.email,
         }
       } catch (error: any) {
-        // Se o usuário já existe, apenas atualiza a assinatura
-        if (error.message?.includes('already registered') || error.message?.includes('already exists')) {
-          // Busca o usuário existente e atualiza assinatura
-          // Isso deve ser feito via Admin API também
+        console.error('Erro ao criar usuário:', error)
+        
+        // Se o usuário já existe, tenta atualizar apenas a assinatura
+        if (error.message?.includes('already registered') || 
+            error.message?.includes('already exists') ||
+            error.message?.includes('duplicate') ||
+            error.message?.includes('User already registered')) {
+          
+          console.log('Usuário já existe, tentando atualizar assinatura...')
+          
+          try {
+            // Busca o usuário existente pelo email
+            const getUserResponse = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${serviceRoleKey}`,
+                'apikey': serviceRoleKey,
+              },
+            })
+            
+            if (getUserResponse.ok) {
+              const users = await getUserResponse.json()
+              const existingUser = users.users?.find((u: any) => u.email === email)
+              
+              if (existingUser) {
+                // Atualiza o perfil com a assinatura ativa
+                const updateProfileResponse = await fetch(`${supabaseUrl}/rest/v1/profiles?id=eq.${existingUser.id}`, {
+                  method: 'PATCH',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${serviceRoleKey}`,
+                    'apikey': serviceRoleKey,
+                    'Prefer': 'return=representation',
+                  },
+                  body: JSON.stringify({
+                    subscription_status: 'active',
+                    subscription_plan: 'premium',
+                    subscription_start_date: new Date().toISOString(),
+                    subscription_end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    subscription_renewal_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    payment_provider: 'perfectpay',
+                  }),
+                })
+                
+                if (updateProfileResponse.ok) {
+                  return {
+                    success: true,
+                    message: 'Usuário já existe, assinatura atualizada com sucesso',
+                    userId: existingUser.id,
+                    email: existingUser.email,
+                  }
+                }
+              }
+            }
+          } catch (updateError) {
+            console.error('Erro ao atualizar assinatura do usuário existente:', updateError)
+          }
+          
           return {
             success: true,
-            message: 'Usuário já existe, assinatura atualizada',
+            message: 'Usuário já existe. Se não recebeu o email, entre em contato com o suporte.',
           }
         }
 
-        console.error('Erro ao criar usuário:', error)
         return {
           success: false,
           message: `Erro ao criar conta: ${error.message}`,

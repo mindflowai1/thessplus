@@ -56,11 +56,21 @@ export async function createUserInSupabase(
     })
 
     if (!response.ok) {
-      const error = await response.json()
-      throw new Error(error.message || 'Erro ao criar usuário')
+      const errorData = await response.json()
+      console.error('Error creating user:', errorData)
+      
+      // Se o erro é porque o usuário já existe, propaga com mensagem específica
+      if (errorData.code === 'user_already_exists' || 
+          errorData.msg?.includes('already registered') ||
+          errorData.message?.includes('already registered')) {
+        throw new Error('User already registered')
+      }
+      
+      throw new Error(errorData.message || errorData.msg || 'Erro ao criar usuário')
     }
 
     const user = await response.json()
+    console.log('User created successfully:', user.id)
 
     // Cria perfil na tabela profiles
     const profileResponse = await fetch(`${supabaseUrl}/rest/v1/profiles`, {
@@ -85,8 +95,12 @@ export async function createUserInSupabase(
     })
 
     if (!profileResponse.ok) {
-      console.error('Erro ao criar perfil:', await profileResponse.text())
+      const profileError = await profileResponse.text()
+      console.error('Erro ao criar perfil:', profileError)
       // Não falha se o perfil não for criado, pode ser criado depois
+      // O trigger do Supabase ou o AuthContext pode criar depois
+    } else {
+      console.log('Profile created successfully for user:', user.id)
     }
 
     return {

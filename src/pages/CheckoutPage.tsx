@@ -13,6 +13,7 @@ export function CheckoutPage() {
   const [isRedirecting, setIsRedirecting] = useState(false)
   const [email, setEmail] = useState('')
   const [fullName, setFullName] = useState('')
+  const [phone, setPhone] = useState('')
   const [error, setError] = useState<string | null>(null)
 
   const handleCheckout = async (e?: React.FormEvent) => {
@@ -34,7 +35,8 @@ export function CheckoutPage() {
       redirectToCheckout(
         email, // userId (usando email como identificador temporário)
         email, // customerEmail
-        fullName || undefined // customerName (opcional)
+        fullName || undefined, // customerName (opcional)
+        phone || undefined // customerPhone (opcional)
       )
     } catch (error: any) {
       console.error('Erro ao redirecionar para checkout:', error)
@@ -120,6 +122,42 @@ export function CheckoutPage() {
                   onChange={(e) => setFullName(e.target.value)}
                   disabled={isRedirecting}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="flex items-center gap-2">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  Telefone
+                </Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="(11) 99999-9999"
+                  value={phone}
+                  onChange={(e) => {
+                    // Remove tudo que não é número
+                    const numbers = e.target.value.replace(/\D/g, '')
+                    // Formata como (XX) XXXXX-XXXX
+                    let formatted = numbers
+                    if (numbers.length > 0) {
+                      formatted = `(${numbers.slice(0, 2)}`
+                      if (numbers.length > 2) {
+                        formatted += `) ${numbers.slice(2, 7)}`
+                        if (numbers.length > 7) {
+                          formatted += `-${numbers.slice(7, 11)}`
+                        }
+                      }
+                    }
+                    setPhone(formatted)
+                  }}
+                  disabled={isRedirecting}
+                  maxLength={15}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Opcional - Ajuda na identificação da conta
+                </p>
               </div>
 
               {error && (

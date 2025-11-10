@@ -24,13 +24,20 @@ const PERFECTPAY_API_URL = import.meta.env.VITE_PERFECTPAY_API_URL || 'https://a
  * @param userId - ID do usuário (para rastreamento) - será usado como email no campo custom
  * @param customerEmail - Email do cliente
  * @param customerName - Nome do cliente
+ * @param customerPhone - Telefone do cliente (opcional)
  * @returns URL de checkout da PerfectPay
  */
 export function generateCheckoutUrl(
   userId: string,
   customerEmail: string,
-  customerName?: string
+  customerName?: string,
+  customerPhone?: string
 ): string {
+  // URL de retorno após pagamento (redireciona para página de login)
+  const returnUrl = typeof window !== 'undefined' 
+    ? `${window.location.origin}/auth?payment=success`
+    : 'https://thessplus-454059341133.europe-west1.run.app/auth?payment=success'
+
   // Se tiver URL de checkout direto configurada, usar ela com parâmetros
   if (PERFECTPAY_CHECKOUT_URL && PERFECTPAY_CHECKOUT_URL.includes('go.perfectpay.com.br')) {
     // Link direto da PerfectPay - adicionar parâmetros via query string
@@ -40,6 +47,11 @@ export function generateCheckoutUrl(
       // Usar email como identificador para garantir que o webhook receba
       custom: customerEmail,
       ...(customerName && { name: customerName }),
+      ...(customerPhone && { phone: customerPhone.replace(/\D/g, '') }), // Remove formatação do telefone
+      // URL de retorno após pagamento
+      return_url: returnUrl,
+      success_url: returnUrl,
+      redirect_url: returnUrl,
     })
     
     return `${PERFECTPAY_CHECKOUT_URL}?${params.toString()}`
@@ -53,13 +65,23 @@ export function generateCheckoutUrl(
   // URL base do checkout da PerfectPay
   const baseUrl = `${PERFECTPAY_API_URL}/checkout`
   
+  // URL de retorno após pagamento
+  const returnUrl = typeof window !== 'undefined' 
+    ? `${window.location.origin}/auth?payment=success`
+    : 'https://thessplus-454059341133.europe-west1.run.app/auth?payment=success'
+
   // Parâmetros do checkout
   const params = new URLSearchParams({
     product: PERFECTPAY_PRODUCT_ID,
     email: customerEmail,
     ...(customerName && { name: customerName }),
+    ...(customerPhone && { phone: customerPhone.replace(/\D/g, '') }), // Remove formatação do telefone
     // Custom field para rastrear o usuário (usado no webhook)
     custom: userId,
+    // URL de retorno após pagamento
+    return_url: returnUrl,
+    success_url: returnUrl,
+    redirect_url: returnUrl,
   })
 
   return `${baseUrl}?${params.toString()}`
@@ -71,9 +93,10 @@ export function generateCheckoutUrl(
 export function redirectToCheckout(
   userId: string,
   customerEmail: string,
-  customerName?: string
+  customerName?: string,
+  customerPhone?: string
 ): void {
-  const checkoutUrl = generateCheckoutUrl(userId, customerEmail, customerName)
+  const checkoutUrl = generateCheckoutUrl(userId, customerEmail, customerName, customerPhone)
   window.location.href = checkoutUrl
 }
 

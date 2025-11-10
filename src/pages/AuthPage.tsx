@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/contexts/ThemeContext'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { supabase } from '@/services/supabase'
-import { Loader2, ArrowLeft } from 'lucide-react'
+import { Loader2, ArrowLeft, CheckCircle2 } from 'lucide-react'
 import { AuthTransition } from '@/components/AuthTransition'
 // Importar logos - usar caminhos absolutos para garantir funcionamento em produção
 import logoLight from '@/assets/Logo1.png'
@@ -21,9 +21,11 @@ export function AuthPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const [paymentSuccess, setPaymentSuccess] = useState(false)
   const { user } = useAuth()
   const { theme } = useTheme()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   
   // Garantir que o logo seja atualizado quando o tema mudar
   // Usar fallback se os imports não funcionarem
@@ -38,6 +40,16 @@ export function AuthPage() {
     console.log('Logo Light:', logoLight)
     console.log('Logo Dark:', logoDark)
   }, [theme, logo])
+
+  // Verificar se voltou após pagamento
+  useEffect(() => {
+    const paymentParam = searchParams.get('payment')
+    if (paymentParam === 'success') {
+      setPaymentSuccess(true)
+      // Remover o parâmetro da URL sem recarregar a página
+      navigate('/auth', { replace: true })
+    }
+  }, [searchParams, navigate])
 
   useEffect(() => {
     if (user) {
@@ -114,6 +126,20 @@ export function AuthPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {paymentSuccess && (
+            <div className="mb-4 p-3 text-sm bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-md flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+              <div>
+                <p className="font-medium text-green-900 dark:text-green-200">
+                  Pagamento realizado com sucesso!
+                </p>
+                <p className="text-green-700 dark:text-green-300 text-xs mt-1">
+                  Sua conta foi criada automaticamente. Faça login com o email usado no pagamento.
+                  A senha foi enviada por email.
+                </p>
+              </div>
+            </div>
+          )}
           <form onSubmit={handleEmailAuth} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">

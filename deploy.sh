@@ -138,3 +138,4 @@ echo "3. Configure o Supabase com esta URL nas configurações de redirect"
 
 
 
+

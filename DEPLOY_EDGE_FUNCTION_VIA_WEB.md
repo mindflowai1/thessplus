@@ -1,18 +1,49 @@
-/**
- * Edge Function do Supabase para processar webhooks da PerfectPay
- * 
- * Como usar:
- * 1. Instale o Supabase CLI: npm install -g supabase
- * 2. Faça login: supabase login
- * 3. Link seu projeto: supabase link --project-ref seu-project-ref
- * 4. Deploy: supabase functions deploy perfectpay-webhook
- * 
- * Configure as variáveis de ambiente no Supabase Dashboard:
- * - SUPABASE_URL
- * - SUPABASE_SERVICE_ROLE_KEY
- * - APP_URL (URL da sua aplicação)
- */
+# 🌐 Deploy Edge Function via Site do Supabase (Sem CLI)
 
+Sim! É possível criar a Edge Function diretamente pelo site do Supabase, sem usar a CLI. Este guia mostra como fazer.
+
+---
+
+## ⚠️ Limitação Importante
+
+**A interface web do Supabase permite criar funções simples**, mas nossa função precisa importar código de outros arquivos (`src/services/webhook.ts`). 
+
+**Solução:** Vamos criar uma versão **autocontida** da função (todo o código em um único arquivo).
+
+---
+
+## 🚀 Passo 1: Acessar Edge Functions no Dashboard
+
+1. Acesse: https://supabase.com/dashboard
+2. Selecione seu projeto
+3. No menu lateral esquerdo, clique em **"Edge Functions"**
+4. Você verá a lista de funções (pode estar vazia)
+
+---
+
+## ➕ Passo 2: Criar Nova Função
+
+1. Clique no botão **"+ New Function"** ou **"Create Function"**
+2. Preencha:
+   - **Function Name:** `perfectpay-webhook`
+   - **Description:** `Webhook handler para processar pagamentos da PerfectPay`
+3. Clique em **"Create"** ou **"Create Function"**
+
+---
+
+## 📝 Passo 3: Copiar o Código Completo
+
+Agora você precisa copiar o código completo. Vou criar uma versão autocontida:
+
+### 3.1. Abrir o Editor
+
+Após criar a função, você verá um editor de código no navegador.
+
+### 3.2. Substituir o Código Padrão
+
+**Delete todo o código padrão** e cole este código completo:
+
+```typescript
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 
 const corsHeaders = {
@@ -354,3 +385,152 @@ serve(async (req) => {
     )
   }
 })
+```
+
+### 3.3. Salvar a Função
+
+1. Clique em **"Deploy"** ou **"Save"** (geralmente no canto superior direito)
+2. Aguarde alguns segundos
+3. Você verá uma mensagem de sucesso
+
+---
+
+## ⚙️ Passo 4: Configurar Variáveis de Ambiente
+
+### 4.1. Acessar Settings
+
+Na página da função:
+1. Clique na aba **"Settings"** (no topo)
+2. Role até **"Secrets"** ou **"Environment Variables"**
+
+### 4.2. Adicionar Variáveis
+
+Clique em **"Add new secret"** ou **"+ Add variable"**
+
+**Adicione 3 variáveis:**
+
+#### Variável 1: SUPABASE_URL
+```
+Name:  SUPABASE_URL
+Value: https://ldhxfiyjopesopqiwxyk.supabase.co
+```
+*Substitua pelo URL do seu projeto*
+
+#### Variável 2: SUPABASE_SERVICE_ROLE_KEY
+```
+Name:  SUPABASE_SERVICE_ROLE_KEY
+Value: (Cole a Service Role Key)
+```
+*Para obter: Settings → API → service_role → Reveal → Copy*
+
+#### Variável 3: APP_URL
+```
+Name:  APP_URL
+Value: https://thessplus-454059341133.europe-west1.run.app
+```
+*URL do seu site em produção*
+
+### 4.3. Salvar
+
+Clique em **"Save"** para cada variável.
+
+---
+
+## 🔗 Passo 5: Obter URL da Função
+
+1. Na página da função, procure por **"Function URL"** ou **"Endpoint"**
+2. Copie a URL (algo como):
+   ```
+   https://ldhxfiyjopesopqiwxyk.supabase.co/functions/v1/perfectpay-webhook
+   ```
+
+**Esta é a URL que você vai usar na PerfectPay!**
+
+---
+
+## ✅ Passo 6: Testar a Função
+
+### 6.1. Testar via Dashboard
+
+No Dashboard do Supabase:
+1. Vá em **Edge Functions** → **perfectpay-webhook**
+2. Clique na aba **"Logs"**
+3. Você pode testar enviando um webhook de teste
+
+### 6.2. Testar via Navegador (Opcional)
+
+Abra uma nova aba e cole esta URL (substitua pela sua):
+
+```
+https://ldhxfiyjopesopqiwxyk.supabase.co/functions/v1/perfectpay-webhook
+```
+
+Deve retornar um erro (esperado, pois precisa de dados do webhook), mas confirma que a função está rodando.
+
+---
+
+## 🔄 Passo 7: Configurar Webhook na PerfectPay
+
+1. Acesse: https://app.perfectpay.com.br
+2. Vá em **Produtos** → Seu Produto → **Webhooks**
+3. Adicione a URL:
+   ```
+   https://ldhxfiyjopesopqiwxyk.supabase.co/functions/v1/perfectpay-webhook
+   ```
+4. Selecione eventos: **Aprovado**, **Cancelado**, **Reembolsado**
+5. Salve
+
+---
+
+## 📊 Passo 8: Monitorar Logs
+
+No Dashboard do Supabase:
+1. **Edge Functions** → **perfectpay-webhook** → **Logs**
+2. Você verá todos os webhooks recebidos
+3. Verifique se há erros
+
+---
+
+## ✅ Vantagens de Fazer pelo Site
+
+- ✅ **Não precisa instalar CLI**
+- ✅ **Não precisa usar terminal**
+- ✅ **Interface visual**
+- ✅ **Edição direta no navegador**
+- ✅ **Logs visíveis no dashboard**
+
+---
+
+## ⚠️ Desvantagens
+
+- ⚠️ **Código em um único arquivo** (mais difícil de manter)
+- ⚠️ **Não sincroniza com Git** automaticamente
+- ⚠️ **Edições futuras precisam ser feitas no site**
+
+---
+
+## 🔄 Atualizar a Função no Futuro
+
+Se precisar atualizar o código:
+
+1. Acesse **Edge Functions** → **perfectpay-webhook**
+2. Edite o código no editor
+3. Clique em **"Deploy"** ou **"Save"**
+4. Pronto!
+
+---
+
+## 🎉 Pronto!
+
+Agora sua Edge Function está deployada **sem usar CLI**!
+
+**Próximos passos:**
+1. ✅ Função criada e deployada
+2. ✅ Variáveis de ambiente configuradas
+3. ⏳ Configurar webhook na PerfectPay
+4. ⏳ Testar com pagamento real
+
+---
+
+**Última atualização:** Novembro 2024
+

@@ -14,13 +14,14 @@ export interface PerfectPayConfig {
 }
 
 // Configuração padrão - deve ser definida via variáveis de ambiente
-const PERFECTPAY_PRODUCT_ID = import.meta.env.VITE_PERFECTPAY_PRODUCT_ID || ''
+const PERFECTPAY_PRODUCT_ID = import.meta.env.VITE_PERFECTPAY_PRODUCT_ID || 'PPLQQNQO7'
+const PERFECTPAY_CHECKOUT_URL = import.meta.env.VITE_PERFECTPAY_CHECKOUT_URL || 'https://go.perfectpay.com.br/PPU38CQ332U'
 const PERFECTPAY_API_URL = import.meta.env.VITE_PERFECTPAY_API_URL || 'https://app.perfectpay.com.br'
 
 /**
  * Gera o link de checkout da PerfectPay
  * 
- * @param userId - ID do usuário (para rastreamento)
+ * @param userId - ID do usuário (para rastreamento) - será usado como email no campo custom
  * @param customerEmail - Email do cliente
  * @param customerName - Nome do cliente
  * @returns URL de checkout da PerfectPay
@@ -30,8 +31,23 @@ export function generateCheckoutUrl(
   customerEmail: string,
   customerName?: string
 ): string {
+  // Se tiver URL de checkout direto configurada, usar ela com parâmetros
+  if (PERFECTPAY_CHECKOUT_URL && PERFECTPAY_CHECKOUT_URL.includes('go.perfectpay.com.br')) {
+    // Link direto da PerfectPay - adicionar parâmetros via query string
+    const params = new URLSearchParams({
+      email: customerEmail,
+      // Custom field para rastrear o usuário (usado no webhook)
+      // Usar email como identificador para garantir que o webhook receba
+      custom: customerEmail,
+      ...(customerName && { name: customerName }),
+    })
+    
+    return `${PERFECTPAY_CHECKOUT_URL}?${params.toString()}`
+  }
+
+  // Fallback: usar método antigo com product ID (se não tiver link direto)
   if (!PERFECTPAY_PRODUCT_ID) {
-    throw new Error('PERFECTPAY_PRODUCT_ID não configurado')
+    throw new Error('PERFECTPAY_PRODUCT_ID ou PERFECTPAY_CHECKOUT_URL não configurado')
   }
 
   // URL base do checkout da PerfectPay

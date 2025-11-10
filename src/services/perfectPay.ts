@@ -64,11 +64,6 @@ export function generateCheckoutUrl(
 
   // URL base do checkout da PerfectPay
   const baseUrl = `${PERFECTPAY_API_URL}/checkout`
-  
-  // URL de retorno após pagamento
-  const returnUrl = typeof window !== 'undefined' 
-    ? `${window.location.origin}/auth?payment=success`
-    : 'https://thessplus-454059341133.europe-west1.run.app/auth?payment=success'
 
   // Parâmetros do checkout
   const params = new URLSearchParams({

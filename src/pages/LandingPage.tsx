@@ -4,6 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { DottedPattern } from '@/components/magic-ui/dotted-pattern'
 import { LightRays } from '@/components/magic-ui/light-rays'
 import { AnimatedGridPattern } from '@/components/magic-ui/animated-grid-pattern'
+import { AdvancedBackground } from '@/components/magic-ui/advanced-background'
+import { FloatingCards } from '@/components/magic-ui/floating-cards'
+import { DashboardMockup } from '@/components/magic-ui/dashboard-mockup'
 import {
   Calendar,
   DollarSign,
@@ -249,19 +252,19 @@ export function LandingPage() {
 
   return (
     <div className="landing-page-wrapper min-h-screen relative overflow-hidden" style={{ colorScheme: 'light' }}>
-      {/* Advanced Background Patterns */}
-      <div className="fixed inset-0 -z-10">
+      {/* Advanced Background with Multiple Layers */}
+      <AdvancedBackground />
+      
+      {/* Subtle Pattern Overlays */}
+      <div className="fixed inset-0 -z-[5] pointer-events-none">
         <AnimatedGridPattern
           width={60}
           height={60}
-          className="opacity-[0.03] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_40%,transparent_100%)]"
+          className="opacity-[0.02] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_40%,transparent_100%)]"
           squares={[[1, 1], [5, 3], [3, 7], [8, 2], [10, 8], [15, 5], [20, 12]]}
         />
-        <DottedPattern className="opacity-[0.15]" />
-        <LightRays className="opacity-30" />
-        {/* Gradient Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-amber-500/5" />
-        <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/50 to-transparent" />
+        <DottedPattern className="opacity-[0.08]" />
+        <LightRays className="opacity-20" />
       </div>
 
       {/* Header */}
@@ -548,111 +551,187 @@ export function LandingPage() {
         )}
       </AnimatePresence>
 
-      {/* Hero Section - Premium Design */}
-      <section className="container relative pt-24 pb-12 sm:pt-20 sm:pb-16 md:py-20 lg:py-32 overflow-hidden">
-        <div className="mx-auto max-w-6xl text-center px-4 sm:px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-          >
-            {/* Título Principal com Gradiente Animado */}
-            <motion.h1 
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-tight mb-6 sm:mb-8 leading-tight"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
+      {/* Hero Section - Modern Split Layout */}
+      <section className="container relative pt-24 pb-12 sm:pt-28 sm:pb-20 md:pt-32 md:pb-24 lg:pt-40 lg:pb-32 overflow-hidden">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            
+            {/* Left Side - Content */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="text-left"
             >
-              <span className="relative inline-block">
-                <span className="landing-hero-title">
-                  Controle seus Gastos
+              {/* Badge */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-50 to-violet-50 border border-blue-200/50 mb-6"
+              >
+                <Sparkles className="w-4 h-4 text-blue-600" />
+                <span className="text-sm font-semibold text-blue-900">Automação Inteligente</span>
+              </motion.div>
+
+              {/* Main Title - Premium Version */}
+              <motion.h1 
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1]"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <span className="landing-hero-title-modern">
+                  Organize suas Finanças
                 </span>
-                <div className="landing-hero-glow" />
-              </span>
-              <br />
-              <span className="landing-hero-title-accent">
-                e Agende Compromissos
-              </span>
-            </motion.h1>
+                <br />
+                <span className="landing-hero-title-modern">
+                  e Simplifique sua
+                </span>
+                <br />
+                <span className="landing-hero-title-accent-modern">
+                  Rotina em um Só Lugar
+                </span>
+              </motion.h1>
 
-            {/* Subtítulo Melhorado */}
-            <motion.p 
-              className="mt-6 sm:mt-8 text-base sm:text-lg md:text-xl lg:text-2xl leading-7 sm:leading-8 md:leading-9 text-gray-700 max-w-3xl mx-auto px-2 font-medium"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              A plataforma completa para gerenciar suas finanças e compromissos. 
-              <span className="text-blue-600 font-semibold"> Integração com Google Calendar</span>, 
-              controle de gastos inteligente e muito mais.
-            </motion.p>
+              {/* Subtitle - Emotional & Persuasive */}
+              <motion.p 
+                className="mt-6 text-lg sm:text-xl md:text-2xl leading-relaxed text-gray-700 max-w-2xl font-medium"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
+                Chega de planilhas confusas e compromissos esquecidos. 
+                <span className="text-blue-600 font-semibold"> Automatize sua gestão financeira</span>, 
+                sincronize com o Google Calendar e{' '}
+                <span className="text-violet-600 font-semibold">tenha controle total da sua vida</span> — 
+                tudo em uma plataforma intuitiva e poderosa.
+              </motion.p>
 
-            {/* CTAs com Animações Avançadas */}
-            <motion.div 
-              className="mt-10 sm:mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-x-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-            >
-              <Link to="/auth" className="w-full sm:w-auto">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="relative"
-                >
-                  <Button
-                    size="lg"
-                    className="landing-cta-primary w-full sm:w-auto text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7"
+              {/* Key Benefits */}
+              <motion.div
+                className="mt-8 flex flex-wrap gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+              >
+                <div className="flex items-center gap-2 text-gray-700">
+                  <CheckCircle2 className="w-5 h-5 text-green-600" strokeWidth={2.5} />
+                  <span className="text-sm font-semibold">Sem stress financeiro</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-700">
+                  <CheckCircle2 className="w-5 h-5 text-green-600" strokeWidth={2.5} />
+                  <span className="text-sm font-semibold">100% automatizado</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-700">
+                  <CheckCircle2 className="w-5 h-5 text-green-600" strokeWidth={2.5} />
+                  <span className="text-sm font-semibold">Integração total</span>
+                </div>
+              </motion.div>
+
+              {/* CTAs - Modern Premium */}
+              <motion.div 
+                className="mt-10 flex flex-col sm:flex-row items-start gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+              >
+                <Link to="/auth" className="w-full sm:w-auto">
+                  <motion.div
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="relative group"
                   >
-                    <Zap className="mr-2 h-5 w-5" />
-                    Começar Agora
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </motion.div>
-              </Link>
-              <Link to="#features" className="w-full sm:w-auto">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    className="landing-cta-secondary w-full sm:w-auto text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7"
+                    <Button
+                      size="lg"
+                      className="landing-cta-primary-modern w-full sm:w-auto text-base sm:text-lg px-8 py-6 sm:py-7 shadow-2xl"
+                    >
+                      <Zap className="mr-2 h-5 w-5" />
+                      Começar Gratuitamente
+                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                    {/* Glow effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-violet-600 rounded-xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity -z-10" />
+                  </motion.div>
+                </Link>
+                <a href="#features" className="w-full sm:w-auto">
+                  <motion.div
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    Saiba Mais
-                  </Button>
-                </motion.div>
-              </Link>
+                    <Button 
+                      size="lg" 
+                      variant="outline" 
+                      className="landing-cta-secondary-modern w-full sm:w-auto text-base sm:text-lg px-8 py-6 sm:py-7"
+                    >
+                      Ver Demonstração
+                      <Sparkles className="ml-2 h-5 w-5" />
+                    </Button>
+                  </motion.div>
+                </a>
+              </motion.div>
+
+              {/* Trust Indicators */}
+              <motion.div
+                className="mt-10 flex items-center gap-6 text-sm text-gray-600"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.7 }}
+              >
+                <div className="flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-blue-600" />
+                  <span className="font-semibold">100% Seguro</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Users className="w-5 h-5 text-violet-600" />
+                  <span className="font-semibold">+10k usuários</span>
+                </div>
+              </motion.div>
             </motion.div>
 
-            {/* Stats com Design Moderno */}
-            <motion.div 
-              className="mt-16 sm:mt-20 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
+            {/* Right Side - Visual Mockup */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+              className="relative h-[500px] lg:h-[600px] hidden lg:block"
             >
-              {stats.map((stat, index) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.7 + index * 0.1 }}
-                  whileHover={{ y: -6 }}
-                  className="relative group w-full"
-                >
-                  <div className="landing-stats-card">
-                    <div className="landing-stats-value">
-                      {stat.value}
-                    </div>
-                    <div className="landing-stats-label">
-                      {stat.label}
-                    </div>
+              {/* Dashboard Mockup */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <DashboardMockup />
+              </div>
+              
+              {/* Floating Cards */}
+              <FloatingCards />
+            </motion.div>
+          </div>
+
+          {/* Stats Row - Below Hero */}
+          <motion.div 
+            className="mt-20 sm:mt-24 grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 max-w-5xl mx-auto"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+          >
+            {stats.map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.9 + index * 0.1 }}
+                whileHover={{ y: -6 }}
+                className="relative group w-full"
+              >
+                <div className="landing-stats-card">
+                  <div className="landing-stats-value">
+                    {stat.value}
                   </div>
-                </motion.div>
-              ))}
-            </motion.div>
+                  <div className="landing-stats-label">
+                    {stat.label}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </section>

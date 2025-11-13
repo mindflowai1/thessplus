@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/select'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import {
-  Plus,
   Trash2,
   Search,
   Calendar,
@@ -33,11 +32,12 @@ import './DashboardPage.css'
 
 interface Transaction {
   id: string
-  descricao: string
-  tipo: 'Entrada' | 'Saída'
-  categoria: string
-  valor: number
-  data: string
+  description: string
+  type: 'Entrada' | 'Saída'
+  category: string
+  amount: number
+  created_at: string
+  user_id: string
 }
 
 // interface DailyBalance {
@@ -79,12 +79,12 @@ export function DashboardPage() {
         .from('transactions')
         .select('*')
         .eq('user_id', user.id)
-        .gte('data', `${startDate}T00:00:00`)
-        .lte('data', `${endDate}T23:59:59`)
-        .order('data', { ascending: false })
+        .gte('created_at', `${startDate}T00:00:00`)
+        .lte('created_at', `${endDate}T23:59:59`)
+        .order('created_at', { ascending: false })
 
       if (selectedCategory && selectedCategory !== '__all__') {
-        query = query.eq('categoria', selectedCategory)
+        query = query.eq('category', selectedCategory)
       }
 
       const { data, error } = await query
@@ -93,7 +93,7 @@ export function DashboardPage() {
 
       const transactions = (data || []).map((tx: any) => ({
         ...tx,
-        valor: Number(tx.valor),
+        amount: Number(tx.amount),
       })) as Transaction[]
 
       setTransactions(transactions)
@@ -135,15 +135,16 @@ export function DashboardPage() {
     if (user) {
       fetchTransactions()
     }
-  }, [user, startDate, endDate, selectedCategory])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
 
   const totals = useMemo(() => {
     const income = transactions
-      .filter((t) => t.tipo === 'Entrada')
-      .reduce((sum, t) => sum + t.valor, 0)
+      .filter((t) => t.type === 'Entrada')
+      .reduce((sum, t) => sum + t.amount, 0)
     const outcome = transactions
-      .filter((t) => t.tipo === 'Saída')
-      .reduce((sum, t) => sum + t.valor, 0)
+      .filter((t) => t.type === 'Saída')
+      .reduce((sum, t) => sum + t.amount, 0)
     return {
       income,
       outcome,
@@ -158,9 +159,9 @@ export function DashboardPage() {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(
         (t) =>
-          t.descricao.toLowerCase().includes(query) ||
-          t.categoria.toLowerCase().includes(query) ||
-          formatDate(t.data).toLowerCase().includes(query)
+          t.description.toLowerCase().includes(query) ||
+          t.category.toLowerCase().includes(query) ||
+          formatDate(t.created_at).toLowerCase().includes(query)
       )
     }
 
@@ -244,9 +245,23 @@ export function DashboardPage() {
             <Filter className="h-4 w-4 mr-2" />
             {showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros'}
           </Button>
-          <Button size="sm" className="dashboard-btn-primary">
-            <Plus className="h-4 w-4 mr-2" />
-            Nova Transação
+          <Button 
+            size="sm" 
+            className="dashboard-btn-primary"
+            onClick={fetchTransactions}
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Buscando...
+              </>
+            ) : (
+              <>
+                <Search className="h-4 w-4 mr-2" />
+                Buscar Transações
+              </>
+            )}
           </Button>
         </div>
       </motion.div>
@@ -270,7 +285,7 @@ export function DashboardPage() {
                 {formatCurrency(totals.income)}
               </div>
               <p className="dashboard-summary-label">
-                {transactions.filter((t) => t.tipo === 'Entrada').length} transação(ões)
+                {transactions.filter((t) => t.type === 'Entrada').length} transação(ões)
               </p>
             </CardContent>
           </Card>
@@ -293,7 +308,7 @@ export function DashboardPage() {
                 {formatCurrency(totals.outcome)}
               </div>
               <p className="dashboard-summary-label">
-                {transactions.filter((t) => t.tipo === 'Saída').length} transação(ões)
+                {transactions.filter((t) => t.type === 'Saída').length} transação(ões)
               </p>
             </CardContent>
           </Card>
@@ -505,13 +520,9 @@ export function DashboardPage() {
                 <h3 className="dashboard-empty-title">Nenhuma transação encontrada</h3>
                 <p className="dashboard-empty-description">
                   {hasActiveFilters
-                    ? 'Tente ajustar os filtros ou adicione uma nova transação.'
-                    : 'Comece adicionando sua primeira transação.'}
+                    ? 'Tente ajustar os filtros e clique em "Buscar Transações" novamente.'
+                    : 'Não há transações para o período selecionado. Ajuste os filtros e busque novamente.'}
                 </p>
-                <Button size="sm" className="dashboard-btn-primary">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Adicionar Transação
-                </Button>
               </div>
             ) : (
               <div className="space-y-2">
@@ -523,7 +534,7 @@ export function DashboardPage() {
                     transition={{ duration: 0.3, delay: index * 0.05 }}
                     className={cn(
                       'dashboard-transaction-item',
-                      transaction.tipo === 'Entrada' 
+                      transaction.type === 'Entrada' 
                         ? 'dashboard-transaction-income' 
                         : 'dashboard-transaction-outcome',
                       selectedIds.has(transaction.id) && 'dashboard-transaction-item-selected'
@@ -540,36 +551,36 @@ export function DashboardPage() {
                       />
                       <div className={cn(
                         'dashboard-transaction-icon',
-                        transaction.tipo === 'Entrada'
+                        transaction.type === 'Entrada'
                           ? 'bg-blue-100 dark:bg-blue-900/30'
                           : 'bg-red-100 dark:bg-red-900/30'
                       )}>
-                        {transaction.tipo === 'Entrada' ? (
+                        {transaction.type === 'Entrada' ? (
                           <ArrowUpCircle className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                         ) : (
                           <ArrowDownCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-semibold truncate text-foreground">{transaction.descricao}</div>
+                        <div className="font-semibold truncate text-foreground">{transaction.description}</div>
                         <div className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
-                          <span className="dashboard-badge">{transaction.categoria}</span>
+                          <span className="dashboard-badge">{transaction.category}</span>
                           <div className="flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
-                            <span>{formatDate(transaction.data)}</span>
+                            <span>{formatDate(transaction.created_at)}</span>
                           </div>
                         </div>
                       </div>
                       <div
                         className={cn(
                           'dashboard-transaction-amount flex-shrink-0',
-                          transaction.tipo === 'Entrada'
+                          transaction.type === 'Entrada'
                             ? 'text-blue-600 dark:text-blue-400'
                             : 'text-red-600 dark:text-red-400'
                         )}
                       >
-                        {transaction.tipo === 'Entrada' ? '+' : '-'}
-                        {formatCurrency(transaction.valor)}
+                        {transaction.type === 'Entrada' ? '+' : '-'}
+                        {formatCurrency(transaction.amount)}
                       </div>
                     </div>
                   </motion.div>

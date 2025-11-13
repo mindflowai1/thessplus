@@ -125,8 +125,20 @@
    ============================================ */
 
 .landing-page-wrapper {
-  background: linear-gradient(to bottom right, #ffffff, #eff6ff, #fffbeb) !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 25%, #fffbeb 50%, #fef3c7 75%, #ffffff 100%) !important;
+  background-size: 400% 400% !important;
+  animation: landing-gradient-shift 30s ease infinite !important;
   min-height: 100vh !important;
+  position: relative;
+}
+
+@keyframes landing-gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 .landing-bg-pattern {
@@ -146,9 +158,42 @@
 }
 
 /* ============================================
-   HERO SECTION
+   HERO SECTION - MODERN VERSION
    ============================================ */
 
+/* Modern Title Styles */
+.landing-hero-title-modern {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.landing-hero-title-accent-modern {
+  background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #c4b5fd 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.02em !important;
+  position: relative;
+}
+
+.landing-hero-title-accent-modern::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #7c3aed, #a78bfa, #c4b5fd);
+  border-radius: 2px;
+  opacity: 0.5;
+}
+
+/* Legacy Hero Styles (keep for compatibility) */
 .landing-hero-title {
   background: linear-gradient(to right, #2563eb, #4f46e5, #2563eb) !important;
   -webkit-background-clip: text !important;
@@ -241,10 +286,60 @@
   transform: scale(1.05) !important;
 }
 
-.landing-stats-card {
-  background: white !important;
+/* Modern CTA Buttons */
+.landing-cta-primary-modern {
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%) !important;
+  color: white !important;
+  font-weight: 700 !important;
+  border: none !important;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease !important;
+}
+
+.landing-cta-primary-modern::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1e40af 0%, #6d28d9 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.landing-cta-primary-modern:hover::before {
+  opacity: 1;
+}
+
+.landing-cta-primary-modern > * {
+  position: relative;
+  z-index: 1;
+}
+
+.landing-cta-secondary-modern {
   border: 2px solid #e5e7eb !important;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  color: #374151 !important;
+  background: white !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.3s ease !important;
+}
+
+.landing-cta-secondary-modern:hover {
+  border-color: #7c3aed !important;
+  color: #7c3aed !important;
+  background: #faf5ff !important;
+  box-shadow: 0 10px 20px rgba(124, 58, 237, 0.15) !important;
+}
+
+.landing-stats-card {
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 2px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.05), 
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   padding: 1.75rem 1.25rem !important;
   border-radius: 1rem !important;
@@ -275,10 +370,13 @@
 }
 
 .landing-stats-card:hover {
-  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.2), 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-  border-color: #2563eb !important;
+  box-shadow: 
+    0 12px 24px rgba(37, 99, 235, 0.2), 
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+  border-color: rgba(37, 99, 235, 0.6) !important;
   transform: translateY(-6px) !important;
-  background: linear-gradient(to bottom, white, #f8fafc) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
 }
 
 .landing-stats-card:hover::before {
@@ -356,18 +454,44 @@
    ============================================ */
 
 .landing-feature-card {
-  background: white !important;
-  border: 2px solid #e5e7eb !important;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 2px solid rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.05), 
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
   transition: all 0.3s ease !important;
   overflow: hidden !important;
   position: relative !important;
 }
 
+.landing-feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, transparent 50%, rgba(245, 158, 11, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
 .landing-feature-card:hover {
-  border-color: #f59e0b !important;
-  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+  border-color: rgba(245, 158, 11, 0.6) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 
+    0 10px 25px rgba(245, 158, 11, 0.15), 
+    0 4px 10px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 1) !important;
   transform: translateY(-4px) !important;
+}
+
+.landing-feature-card:hover::before {
+  opacity: 1;
 }
 
 .landing-feature-icon {
@@ -400,9 +524,14 @@
    ============================================ */
 
 .landing-benefit-card {
-  background: white !important;
-  border: 2px solid #e5e7eb !important;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  background: rgba(255, 255, 255, 0.65) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 2px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.05), 
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
   transition: all 0.3s ease !important;
   padding: 2rem !important;
   border-radius: 1rem !important;
@@ -411,8 +540,12 @@
 }
 
 .landing-benefit-card:hover {
-  border-color: #f59e0b !important;
-  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+  border-color: rgba(245, 158, 11, 0.7) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 
+    0 10px 25px rgba(245, 158, 11, 0.15), 
+    0 4px 10px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 1) !important;
   transform: translateY(-4px) !important;
 }
 
@@ -475,9 +608,14 @@
    ============================================ */
 
 .landing-pricing-card {
-  background: white !important;
-  border: 3px solid #e5e7eb !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.05) !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 3px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.08), 
+    0 4px 10px rgba(0, 0, 0, 0.05),
+    inset 0 2px 0 rgba(255, 255, 255, 0.9) !important;
   border-radius: 1.5rem !important;
   overflow: hidden !important;
   position: relative !important;
@@ -485,8 +623,12 @@
 }
 
 .landing-pricing-card:hover {
-  border-color: #f59e0b !important;
-  box-shadow: 0 20px 40px rgba(245, 158, 11, 0.2), 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+  border-color: rgba(245, 158, 11, 0.8) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 
+    0 20px 40px rgba(245, 158, 11, 0.2), 
+    0 8px 16px rgba(0, 0, 0, 0.1),
+    inset 0 2px 0 rgba(255, 255, 255, 1) !important;
   transform: translateY(-2px) !important;
 }
 

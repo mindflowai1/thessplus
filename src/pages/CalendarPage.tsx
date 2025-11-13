@@ -1,273 +1,225 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
+import { supabase } from '@/services/supabase'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { formatDate } from '@/lib/utils'
 import {
-  Calendar,
-  Plus,
+  Calendar as CalendarIcon,
+  List,
   Loader2,
   RefreshCw,
   Clock,
-  MapPin,
-  Users,
-  ExternalLink,
-  CalendarDays,
-  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  Plus,
 } from 'lucide-react'
-import { listReminders } from '@/services/googleCalendar'
 import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion'
 import { CreateEventDialog } from '@/components/CreateEventDialog'
 
-interface CalendarEvent {
+interface Reminder {
   id: string
-  summary: string
-  description?: string
-  start: {
-    dateTime?: string
-    date?: string
-  }
-  end: {
-    dateTime?: string
-    date?: string
-  }
-  location?: string
-  attendees?: Array<{
-    email: string
-    displayName?: string
-  }>
-  htmlLink?: string
-  status?: string
+  user_id: string
+  title: string
+  description: string | null
+  date: string // DATE
+  time: string | null // TIME
+  google_event_id: string | null
+}
+
+// Cores para eventos
+const EVENT_COLORS = [
+  { bg: 'bg-blue-500', text: 'text-white', hover: 'hover:bg-blue-600', light: 'bg-blue-100', dark: 'bg-blue-900/30' },
+  { bg: 'bg-green-500', text: 'text-white', hover: 'hover:bg-green-600', light: 'bg-green-100', dark: 'bg-green-900/30' },
+  { bg: 'bg-orange-500', text: 'text-white', hover: 'hover:bg-orange-600', light: 'bg-orange-100', dark: 'bg-orange-900/30' },
+  { bg: 'bg-purple-500', text: 'text-white', hover: 'hover:bg-purple-600', light: 'bg-purple-100', dark: 'bg-purple-900/30' },
+  { bg: 'bg-pink-500', text: 'text-white', hover: 'hover:bg-pink-600', light: 'bg-pink-100', dark: 'bg-pink-900/30' },
+  { bg: 'bg-red-500', text: 'text-white', hover: 'hover:bg-red-600', light: 'bg-red-100', dark: 'bg-red-900/30' },
+  { bg: 'bg-indigo-500', text: 'text-white', hover: 'hover:bg-indigo-600', light: 'bg-indigo-100', dark: 'bg-indigo-900/30' },
+  { bg: 'bg-teal-500', text: 'text-white', hover: 'hover:bg-teal-600', light: 'bg-teal-100', dark: 'bg-teal-900/30' },
+]
+
+// Função para obter cor baseada no ID do evento
+const getEventColor = (id: string) => {
+  const index = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % EVENT_COLORS.length
+  return EVENT_COLORS[index]
 }
 
 export function CalendarPage() {
-  const { user, signInWithGoogle } = useAuth()
-  const [events, setEvents] = useState<CalendarEvent[]>([])
+  const { user } = useAuth()
+  const [reminders, setReminders] = useState<Reminder[]>([])
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [needsGoogleAuth, setNeedsGoogleAuth] = useState(false)
+  const [viewMode, setViewMode] = useState<'week' | 'list'>('week')
   const [createEventOpen, setCreateEventOpen] = useState(false)
+  const [currentWeekStart, setCurrentWeekStart] = useState(() => {
+    const today = new Date()
+    const day = today.getDay()
+    const diff = today.getDate() - day
+    return new Date(today.setDate(diff))
+  })
+  const [startHour, setStartHour] = useState(() => new Date().getHours())
 
-  const fetchEvents = async () => {
+  const fetchReminders = async () => {
     if (!user) return
 
     setLoading(true)
-    setError(null)
-    setNeedsGoogleAuth(false)
     try {
-      const startDate = new Date()
-      startDate.setMonth(startDate.getMonth() - 1) // Último mês
-      const endDate = new Date()
-      endDate.setMonth(endDate.getMonth() + 2) // Próximos 2 meses
+      const { data, error } = await supabase
+        .from('reminders')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('date', { ascending: true })
 
-      // Format dates as YYYY-MM-DD for the API
-      const startDateStr = startDate.toISOString().split('T')[0]
-      const endDateStr = endDate.toISOString().split('T')[0]
+      if (error) throw error
 
-      const eventsList = await listReminders(startDateStr, endDateStr)
-
-      setEvents(eventsList as CalendarEvent[])
-      setNeedsGoogleAuth(false)
-    } catch (err: any) {
-      console.error('Error fetching calendar events:', err)
-      
-      // Check if it's a token error
-      if (err.message?.includes('Google token not found')) {
-        setNeedsGoogleAuth(true)
-        setError('Você precisa conectar sua conta do Google Calendar para visualizar eventos.')
-      } else {
-        setError(err.message || 'Erro ao carregar eventos do Google Calendar. Verifique se você autorizou o acesso.')
-      }
+      setReminders(data || [])
+    } catch (error) {
+      console.error('Error fetching reminders:', error)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleConnectGoogle = async () => {
-    try {
-      await signInWithGoogle()
-    } catch (error) {
-      console.error('Error connecting to Google:', error)
-      setError('Erro ao conectar com o Google. Tente novamente.')
-    }
-  }
-
   useEffect(() => {
     if (user) {
-      fetchEvents()
+      fetchReminders()
     }
   }, [user])
 
-  const getEventDate = (event: CalendarEvent): Date | null => {
-    const dateTime = event.start.dateTime || event.start.date
-    if (!dateTime) return null
-    
-    // Parse the date correctly
-    const date = new Date(dateTime)
-    // Validate the date
-    if (isNaN(date.getTime())) {
-      console.error('Invalid date:', dateTime)
-      return null
+  const getWeekDays = () => {
+    const days = []
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(currentWeekStart)
+      date.setDate(currentWeekStart.getDate() + i)
+      days.push(date)
     }
-    
-    return date
+    return days
   }
 
-  const getEventEndDate = (event: CalendarEvent): Date | null => {
-    const dateTime = event.end.dateTime || event.end.date
-    if (!dateTime) return null
-    
-    // Parse the date correctly
-    const date = new Date(dateTime)
-    // Validate the date
-    if (isNaN(date.getTime())) {
-      console.error('Invalid end date:', dateTime)
-      return null
-    }
-    
-    return date
+  const previousWeek = () => {
+    const newDate = new Date(currentWeekStart)
+    newDate.setDate(newDate.getDate() - 7)
+    setCurrentWeekStart(newDate)
   }
 
-  const formatEventDate = (event: CalendarEvent) => {
-    const date = getEventDate(event)
-    if (!date) return 'Data não disponível'
+  const nextWeek = () => {
+    const newDate = new Date(currentWeekStart)
+    newDate.setDate(newDate.getDate() + 7)
+    setCurrentWeekStart(newDate)
+  }
 
-    const now = new Date()
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-    const eventDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  const goToToday = () => {
+    const today = new Date()
+    const day = today.getDay()
+    const diff = today.getDate() - day
+    setCurrentWeekStart(new Date(today.setDate(diff)))
+  }
 
-    // Check if it's an all-day event
-    const isAllDay = !event.start.dateTime && event.start.date
-
-    if (eventDate.getTime() === today.getTime()) {
-      if (isAllDay) {
-        return 'Hoje (dia todo)'
+  const getRemindersForDayAndHour = (date: Date, hour: number) => {
+    return reminders.filter(r => {
+      const reminderDate = new Date(r.date)
+      if (reminderDate.toDateString() !== date.toDateString()) return false
+      
+      // Extrai a hora do campo date (caso seja timestamptz) ou do campo time
+      let reminderHour: number
+      
+      // Tenta extrair hora do campo date (se tiver informação de hora)
+      const dateObj = new Date(r.date)
+      if (dateObj.getHours() > 0 || dateObj.getMinutes() > 0) {
+        // O campo date tem informação de hora
+        reminderHour = dateObj.getHours()
+      } else if (r.time) {
+        // Usa o campo time
+        const timeParts = r.time.split(':')
+        reminderHour = parseInt(timeParts[0], 10)
+      } else {
+        // Default to 9am if no time specified
+        reminderHour = 9
       }
-      return `Hoje, ${date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`
-    }
-
-    const tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
-    if (eventDate.getTime() === tomorrow.getTime()) {
-      if (isAllDay) {
-        return 'Amanhã (dia todo)'
-      }
-      return `Amanhã, ${date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`
-    }
-
-    if (isAllDay) {
-      return formatDate(event.start.date || '')
-    }
-
-    return `${formatDate(date.toISOString())}, ${date.toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    })}`
+      
+      return reminderHour === hour
+    })
   }
 
-  const formatEventEndTime = (event: CalendarEvent) => {
-    const endDate = getEventEndDate(event)
-    if (!endDate) return null
-
-    const isAllDay = !event.end.dateTime && event.end.date
-    if (isAllDay) return null
-
-    return endDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+  const scrollToEarlierHours = () => {
+    setStartHour(prev => Math.max(0, prev - 4))
   }
 
-  const getEventDuration = (event: CalendarEvent): string => {
-    const startDate = getEventDate(event)
-    const endDate = getEventEndDate(event)
-    if (!startDate || !endDate) return ''
-
-    const diffMs = endDate.getTime() - startDate.getTime()
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
-
-    if (diffHours === 0) {
-      return `${diffMinutes} min`
-    }
-    if (diffMinutes === 0) {
-      return `${diffHours}h`
-    }
-    return `${diffHours}h ${diffMinutes}min`
+  const scrollToLaterHours = () => {
+    setStartHour(prev => Math.min(16, prev + 4))
   }
 
-  const isEventUpcoming = (event: CalendarEvent): boolean => {
-    const eventDate = getEventDate(event)
-    if (!eventDate) return false
+  const resetToCurrentHour = () => {
+    setStartHour(new Date().getHours())
+  }
 
-    const now = new Date()
+  const isToday = (date: Date) => {
+    const today = new Date()
+    return date.toDateString() === today.toDateString()
+  }
+
+  const formatTime = (timeString: string | null, dateString: string) => {
+    // Tenta extrair hora do campo date primeiro (caso seja timestamptz)
+    const dateObj = new Date(dateString)
+    if (dateObj.getHours() > 0 || dateObj.getMinutes() > 0) {
+      return dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+    }
     
-    // For all-day events, compare only the date
-    if (!event.start.dateTime && event.start.date) {
-      const eventDateOnly = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate())
-      const todayOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-      // All-day events are upcoming if they are today or in the future
-      return eventDateOnly.getTime() >= todayOnly.getTime()
+    // Usa o campo time se disponível
+    if (timeString) {
+      return timeString.substring(0, 5) // HH:MM
     }
-
-    // For timed events, compare with end time (if event hasn't ended yet, it's upcoming)
-    const endDate = getEventEndDate(event)
-    if (endDate) {
-      // Event is upcoming if it hasn't ended yet
-      return endDate.getTime() >= now.getTime()
-    }
-
-    // Fallback: compare with start time
-    return eventDate.getTime() >= now.getTime()
+    
+    return '09:00' // Default time
   }
 
-  const getUpcomingEvents = () => {
-    return events
-      .filter(isEventUpcoming)
-      .sort((a, b) => {
-        const dateA = getEventDate(a)
-        const dateB = getEventDate(b)
-        if (!dateA || !dateB) return 0
-        return dateA.getTime() - dateB.getTime()
-      })
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('pt-BR')
   }
 
-  const getPastEvents = () => {
-    return events
-      .filter((event) => !isEventUpcoming(event))
-      .sort((a, b) => {
-        const dateA = getEventDate(a)
-        const dateB = getEventDate(b)
-        if (!dateA || !dateB) return 0
-        return dateB.getTime() - dateA.getTime()
-      })
-  }
-
-  const upcomingEvents = getUpcomingEvents()
-  const pastEvents = getPastEvents()
-
-  const getDaysUntilEvent = (event: CalendarEvent): number | null => {
-    const eventDate = getEventDate(event)
-    if (!eventDate) return null
-
-    const now = new Date()
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-    const eventDateOnly = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate())
-    const diffTime = eventDateOnly.getTime() - today.getTime()
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-    return diffDays
-  }
+  const weekDays = getWeekDays()
+  const weekRange = `${weekDays[0].getDate()} - ${weekDays[6].getDate()} de ${weekDays[0].toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}`
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto p-6 space-y-6 max-w-7xl">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <motion.div 
+        className="flex flex-col gap-4"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Agenda</h1>
           <p className="text-muted-foreground mt-1">
-            Seus eventos e compromissos do Google Calendar
+            Gerencie seus compromissos e lembretes
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={fetchEvents} disabled={loading}>
+
+        <div className="flex flex-wrap items-center gap-3">
+          {/* View Mode Toggle */}
+          <div className="flex items-center gap-1 bg-muted p-1 rounded-lg">
+            <Button
+              variant={viewMode === 'week' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('week')}
+            >
+              <CalendarIcon className="h-4 w-4 mr-2" />
+              Semana
+            </Button>
+            <Button
+              variant={viewMode === 'list' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('list')}
+            >
+              <List className="h-4 w-4 mr-2" />
+              Lista
+            </Button>
+          </div>
+
+          <Button variant="outline" size="sm" onClick={fetchReminders} disabled={loading}>
             {loading ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
             ) : (
@@ -275,8 +227,16 @@ export function CalendarPage() {
             )}
             Atualizar
           </Button>
+
+          {viewMode === 'week' && (
+            <Button variant="outline" size="sm" onClick={resetToCurrentHour}>
+              <Clock className="h-4 w-4 mr-2" />
+              Agora
+            </Button>
+          )}
+
           <Button 
-            size="sm"
+            size="sm" 
             onClick={() => setCreateEventOpen(true)}
             className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800"
           >
@@ -284,348 +244,226 @@ export function CalendarPage() {
             Novo Evento
           </Button>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Stats Cards */}
-      {!loading && events.length > 0 && (
-        <div className="grid gap-4 md:grid-cols-3">
+      {/* Week View */}
+      {viewMode === 'week' ? (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Próximos Eventos</CardTitle>
-              <CalendarDays className="h-4 w-4 text-muted-foreground dark:text-gray-300" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{upcomingEvents.length}</div>
-              <p className="text-xs text-muted-foreground mt-1">Eventos agendados</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Eventos Passados</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground dark:text-gray-300" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{pastEvents.length}</div>
-              <p className="text-xs text-muted-foreground mt-1">Eventos concluídos</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total de Eventos</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground dark:text-gray-300" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{events.length}</div>
-              <p className="text-xs text-muted-foreground mt-1">Neste período</p>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* Error Message / Google Auth Required */}
-      {error && (
-        <Card className={cn(
-          "border-2",
-          needsGoogleAuth 
-            ? "border-blue-200 dark:border-blue-900 bg-blue-50/50 dark:bg-blue-950/20"
-            : "border-red-200 dark:border-red-900 bg-red-50/50 dark:bg-red-950/20"
-        )}>
-          <CardContent className="pt-6">
-            <div className="flex items-start gap-3">
-              <AlertCircle className={cn(
-                "h-5 w-5 mt-0.5 flex-shrink-0",
-                needsGoogleAuth 
-                  ? "text-blue-600 dark:text-blue-400"
-                  : "text-red-600 dark:text-red-400"
-              )} />
-              <div className="flex-1">
-                <p className={cn(
-                  "text-sm font-medium mb-1",
-                  needsGoogleAuth
-                    ? "text-blue-900 dark:text-blue-200"
-                    : "text-red-900 dark:text-red-200"
-                )}>
-                  {needsGoogleAuth ? 'Conecte sua conta do Google' : 'Erro ao carregar eventos'}
-                </p>
-                <p className={cn(
-                  "text-sm mb-3",
-                  needsGoogleAuth
-                    ? "text-blue-700 dark:text-blue-300"
-                    : "text-red-700 dark:text-red-300"
-                )}>{error}</p>
-                {needsGoogleAuth && (
-                  <Button 
-                    onClick={handleConnectGoogle}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
-                    size="sm"
-                  >
-                    <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-                      <path
-                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                        fill="currentColor"
-                      />
-                      <path
-                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                        fill="currentColor"
-                      />
-                      <path
-                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                        fill="currentColor"
-                      />
-                      <path
-                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                    Conectar com Google Calendar
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <CardTitle className="text-xl">{weekRange}</CardTitle>
+                <div className="flex items-center gap-2">
+                  {/* Navegação de semana */}
+                  <Button variant="outline" size="sm" onClick={previousWeek}>
+                    <ChevronLeft className="h-4 w-4" />
                   </Button>
-                )}
+                  <Button variant="outline" size="sm" onClick={goToToday}>
+                    Hoje
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={nextWeek}>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                  
+                  {/* Navegação de horários */}
+                  <div className="border-l pl-2 ml-2 flex items-center gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={scrollToEarlierHours}
+                      disabled={startHour === 0}
+                    >
+                      ↑ Anterior
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={scrollToLaterHours}
+                      disabled={startHour >= 16}
+                    >
+                      ↓ Próximo
+                    </Button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+            </CardHeader>
+            <CardContent className="p-0">
+              {/* Calendar Grid with Time Slots */}
+              <div className="overflow-auto">
+                <div className="min-w-[900px]">
+                  {/* Header Row: Time + Days */}
+                  <div className="grid grid-cols-8 border-b sticky top-0 bg-background z-10">
+                    {/* Time column header */}
+                    <div className="p-3 border-r text-xs font-medium text-muted-foreground">
+                      Horário
+                    </div>
+                    {/* Days headers */}
+                    {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day, index) => {
+                      const date = weekDays[index]
+                      const today = isToday(date)
+                      return (
+                        <div
+                          key={day}
+                          className={cn(
+                            'p-3 text-center border-r last:border-r-0',
+                            today && 'bg-primary/10'
+                          )}
+                        >
+                          <div className="text-xs text-muted-foreground mb-1">{day}</div>
+                          <div className={cn(
+                            'text-xl font-bold',
+                            today && 'text-primary'
+                          )}>
+                            {date.getDate()}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
 
-      {/* Loading State */}
-      {loading && events.length === 0 && (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-            <p className="text-sm text-muted-foreground">Carregando eventos do Google Calendar...</p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Empty State */}
-      {!loading && !error && events.length === 0 && (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <Calendar className="h-12 w-12 text-muted-foreground dark:text-gray-300 mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Nenhum evento encontrado</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Você ainda não tem eventos no Google Calendar para este período.
-            </p>
-            <Button 
-              size="sm"
-              onClick={() => setCreateEventOpen(true)}
-              className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Criar Primeiro Evento
-            </Button>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Upcoming Events */}
-      {upcomingEvents.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-4 sm:mb-6">
-            <h2 className="text-xl sm:text-2xl font-semibold">Próximos Eventos</h2>
-            <span className="text-xs sm:text-sm text-muted-foreground">{upcomingEvents.length} evento(s)</span>
-          </div>
-          <div className="space-y-3 sm:space-y-4">
-            {upcomingEvents.map((event) => {
-              const daysUntil = getDaysUntilEvent(event)
-              const endTime = formatEventEndTime(event)
-              const duration = getEventDuration(event)
-              const isToday = daysUntil === 0
-
-              return (
-                <Card
-                  key={event.id}
-                  className={cn(
-                    'hover:shadow-lg transition-all cursor-pointer border-l-4',
-                    isToday
-                      ? 'border-l-blue-500 bg-blue-50/50 dark:bg-blue-950/20'
-                      : 'border-l-blue-500 hover:border-l-blue-600'
-                  )}
-                >
-                  <CardHeader className="p-4 sm:p-6">
-                    <div className="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-4">
-                      <div className="flex-1 min-w-0 w-full sm:w-auto">
-                        <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
+                  {/* Time Rows (8 horas começando de startHour) */}
+                  {Array.from({ length: 8 }, (_, index) => {
+                    const hour = Math.min(23, startHour + index)
+                    return (
+                    <div key={hour} className="grid grid-cols-8 border-b min-h-[80px]">
+                      {/* Time label */}
+                      <div className="p-3 border-r text-sm text-muted-foreground font-medium text-right">
+                        {hour.toString().padStart(2, '0')}:00
+                      </div>
+                      
+                      {/* Day cells */}
+                      {weekDays.map((day, dayIndex) => {
+                        const today = isToday(day)
+                        const dayReminders = getRemindersForDayAndHour(day, hour)
+                        
+                        return (
                           <div
+                            key={dayIndex}
                             className={cn(
-                              'h-10 w-10 sm:h-12 sm:w-12 rounded-lg flex items-center justify-center flex-shrink-0',
-                              isToday
-                                ? 'bg-blue-100 dark:bg-blue-900/30'
-                                : 'bg-blue-100 dark:bg-blue-900/30'
+                              'p-1.5 border-r last:border-r-0 relative',
+                              today && 'bg-primary/5'
                             )}
                           >
-                            <Calendar
-                              className={cn(
-                                'h-5 w-5 sm:h-6 sm:w-6',
-                                isToday ? 'text-blue-600 dark:text-blue-400' : 'text-blue-600 dark:text-blue-400'
-                              )}
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <CardTitle className="text-base sm:text-lg mb-2 sm:mb-1 truncate">{event.summary}</CardTitle>
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 flex-wrap text-xs sm:text-sm text-muted-foreground">
-                              <div className="flex items-center gap-2">
-                                <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground dark:text-gray-300 flex-shrink-0" />
-                                <span className="font-medium text-sm sm:text-base">{formatEventDate(event)}</span>
-                                {endTime && (
-                                  <>
-                                    <span className="hidden sm:inline">—</span>
-                                    <span className="sm:hidden block">às</span>
-                                    <span className="text-sm sm:text-base">{endTime}</span>
-                                  </>
-                                )}
-                                {duration && (
-                                  <>
-                                    <span className="mx-1 hidden sm:inline">•</span>
-                                    <span className="text-xs sm:text-sm">{duration}</span>
-                                  </>
-                                )}
-                              </div>
-                              {(daysUntil !== null && daysUntil > 0) || isToday ? (
-                                <div className="flex gap-2 flex-wrap">
-                                  {daysUntil !== null && daysUntil > 0 && (
-                                    <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2.5 py-1 rounded-full">
-                                      {daysUntil === 1 ? 'Amanhã' : `Em ${daysUntil} dias`}
-                                    </span>
+                            {dayReminders.map((reminder) => {
+                              const color = getEventColor(reminder.id)
+                              return (
+                                <motion.div
+                                  key={reminder.id}
+                                  initial={{ opacity: 0, scale: 0.9 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  transition={{ duration: 0.2 }}
+                                  className={cn(
+                                    'rounded-lg p-2 mb-1.5 cursor-pointer transition-all shadow-sm',
+                                    color.bg,
+                                    color.text,
+                                    color.hover
                                   )}
-                                  {isToday && (
-                                    <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2.5 py-1 rounded-full font-medium">
-                                      Hoje
-                                    </span>
+                                >
+                                  <div className="font-semibold text-xs mb-0.5">
+                                    {formatTime(reminder.time, reminder.date)}
+                                  </div>
+                                  <div className="font-medium text-sm line-clamp-2">
+                                    {reminder.title}
+                                  </div>
+                                  {reminder.description && (
+                                    <div className="text-xs opacity-90 line-clamp-1 mt-1">
+                                      {reminder.description}
+                                    </div>
                                   )}
-                                </div>
-                              ) : null}
-                            </div>
+                                </motion.div>
+                              )
+                            })}
                           </div>
-                        </div>
-
-                        {(event.location || (event.attendees && event.attendees.length > 0)) && (
-                          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4 mt-3 sm:mt-4 text-xs sm:text-sm text-muted-foreground">
-                            {event.location && (
-                              <div className="flex items-center gap-2">
-                                <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground dark:text-gray-300 flex-shrink-0" />
-                                <span className="truncate max-w-[200px] sm:max-w-xs">{event.location}</span>
-                              </div>
-                            )}
-                            {event.attendees && event.attendees.length > 0 && (
-                              <div className="flex items-center gap-2">
-                                <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground dark:text-gray-300 flex-shrink-0" />
-                                <span>
-                                  {event.attendees.length} participante{event.attendees.length > 1 ? 's' : ''}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        {event.description && (
-                          <p className="text-xs sm:text-sm text-muted-foreground mt-3 sm:mt-4 line-clamp-2 leading-relaxed">{event.description}</p>
-                        )}
-                      </div>
-
-                      {event.htmlLink && (
-                        <Button variant="outline" size="sm" asChild className="flex-shrink-0 w-full sm:w-auto mt-3 sm:mt-0">
-                          <a href={event.htmlLink} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2" />
-                            Abrir
-                          </a>
-                        </Button>
-                      )}
+                        )
+                      })}
                     </div>
-                  </CardHeader>
-                </Card>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Past Events */}
-      {pastEvents.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-4 sm:mb-6">
-            <h2 className="text-xl sm:text-2xl font-semibold">Eventos Passados</h2>
-            <span className="text-xs sm:text-sm text-muted-foreground">{pastEvents.length} evento(s)</span>
-          </div>
-          <div className="space-y-3 sm:space-y-4">
-            {pastEvents.slice(0, 10).map((event) => {
-              const endTime = formatEventEndTime(event)
-              const duration = getEventDuration(event)
-
-              return (
-                <Card key={event.id} className="opacity-70 hover:opacity-100 transition-opacity border-l-4 border-l-gray-300">
-                  <CardHeader className="p-4 sm:p-6">
-                    <div className="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-4">
-                      <div className="flex-1 min-w-0 w-full sm:w-auto">
-                        <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
-                          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0">
-                            <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-gray-500 dark:text-gray-300" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <CardTitle className="text-base sm:text-lg mb-2 sm:mb-1 truncate">{event.summary}</CardTitle>
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 flex-wrap text-xs sm:text-sm text-muted-foreground">
-                              <div className="flex items-center gap-2">
-                                <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground dark:text-gray-300 flex-shrink-0" />
-                                <span className="text-sm sm:text-base">{formatEventDate(event)}</span>
-                                {endTime && (
-                                  <>
-                                    <span className="hidden sm:inline">—</span>
-                                    <span className="sm:hidden block">às</span>
-                                    <span className="text-sm sm:text-base">{endTime}</span>
-                                  </>
-                                )}
-                                {duration && (
-                                  <>
-                                    <span className="mx-1 hidden sm:inline">•</span>
-                                    <span className="text-xs sm:text-sm">{duration}</span>
-                                  </>
-                                )}
+                  )})}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      ) : (
+        /* List View */
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>Todos os Lembretes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+                  <p className="text-sm text-muted-foreground">Carregando lembretes...</p>
+                </div>
+              ) : reminders.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <FileText className="h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Nenhum lembrete encontrado</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Você ainda não tem lembretes cadastrados.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {reminders.map((reminder) => {
+                    const reminderDate = new Date(reminder.date)
+                    const isPast = reminderDate < new Date()
+                    
+                    return (
+                      <div
+                        key={reminder.id}
+                        className={cn(
+                          'p-4 rounded-lg border transition-all',
+                          isPast ? 'opacity-60 bg-muted/30' : 'bg-card hover:shadow-md'
+                        )}
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="h-3 w-3 rounded-full bg-blue-500" />
+                              <h3 className="font-semibold">{reminder.title}</h3>
+                            </div>
+                            {reminder.description && (
+                              <p className="text-sm text-muted-foreground mb-2">
+                                {reminder.description}
+                              </p>
+                            )}
+                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                              <div className="flex items-center gap-1">
+                                <CalendarIcon className="h-3 w-3" />
+                                {formatDate(reminder.date)}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                {formatTime(reminder.time, reminder.date)}
                               </div>
                             </div>
                           </div>
                         </div>
-
-                        {(event.location || (event.attendees && event.attendees.length > 0)) && (
-                          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4 mt-3 sm:mt-4 text-xs sm:text-sm text-muted-foreground">
-                            {event.location && (
-                              <div className="flex items-center gap-2">
-                                <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground dark:text-gray-300 flex-shrink-0" />
-                                <span className="truncate max-w-[200px] sm:max-w-xs">{event.location}</span>
-                              </div>
-                            )}
-                            {event.attendees && event.attendees.length > 0 && (
-                              <div className="flex items-center gap-2">
-                                <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground dark:text-gray-300 flex-shrink-0" />
-                                <span>
-                                  {event.attendees.length} participante{event.attendees.length > 1 ? 's' : ''}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        )}
                       </div>
-
-                      {event.htmlLink && (
-                        <Button variant="ghost" size="sm" asChild className="flex-shrink-0 w-full sm:w-auto mt-3 sm:mt-0">
-                          <a href={event.htmlLink} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2 dark:text-gray-300" />
-                            Ver
-                          </a>
-                        </Button>
-                      )}
-                    </div>
-                  </CardHeader>
-                </Card>
-              )
-            })}
-          </div>
-        </div>
+                    )
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
       )}
 
       {/* Create Event Dialog */}
-      <CreateEventDialog
+      <CreateEventDialog 
         open={createEventOpen}
         onOpenChange={setCreateEventOpen}
-        onEventCreated={fetchEvents}
+        onEventCreated={fetchReminders}
       />
     </div>
   )

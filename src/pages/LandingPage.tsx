@@ -3,8 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { DottedPattern } from '@/components/magic-ui/dotted-pattern'
 import { LightRays } from '@/components/magic-ui/light-rays'
-import { ShineBorder } from '@/components/magic-ui/shine-border'
-import { MagicCard } from '@/components/magic-ui/magic-card'
+import { AnimatedGridPattern } from '@/components/magic-ui/animated-grid-pattern'
 import {
   Calendar,
   DollarSign,
@@ -25,6 +24,11 @@ import {
   Linkedin,
   Instagram,
   MessageCircle,
+  Sparkles,
+  Zap,
+  Shield,
+  TrendingUp,
+  Users,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
@@ -32,6 +36,7 @@ import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import logoLight from '@/assets/Logo1.png'
 import logoDark from '@/assets/Logo 2.png'
+import './LandingPage.css'
 
 export function LandingPage() {
   const { user, signOut } = useAuth()
@@ -243,12 +248,20 @@ export function LandingPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden light" style={{ colorScheme: 'light' }}>
-      {/* Background Patterns */}
+    <div className="landing-page-wrapper min-h-screen relative overflow-hidden" style={{ colorScheme: 'light' }}>
+      {/* Advanced Background Patterns */}
       <div className="fixed inset-0 -z-10">
-        <DottedPattern className="opacity-10" />
-        <LightRays className="opacity-20" />
-        <div className="absolute inset-0 bg-blue-50/20" />
+        <AnimatedGridPattern
+          width={60}
+          height={60}
+          className="opacity-[0.03] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_40%,transparent_100%)]"
+          squares={[[1, 1], [5, 3], [3, 7], [8, 2], [10, 8], [15, 5], [20, 12]]}
+        />
+        <DottedPattern className="opacity-[0.15]" />
+        <LightRays className="opacity-30" />
+        {/* Gradient Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-amber-500/5" />
+        <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/50 to-transparent" />
       </div>
 
       {/* Header */}
@@ -535,148 +548,187 @@ export function LandingPage() {
         )}
       </AnimatePresence>
 
-      {/* Hero Section - Mobile Optimized */}
-      <section className="container relative pt-24 pb-12 sm:pt-20 sm:pb-16 md:py-20 lg:py-32 overflow-hidden bg-white">
-        <div className="mx-auto max-w-5xl text-center px-4 sm:px-6">
+      {/* Hero Section - Premium Design */}
+      <section className="container relative pt-24 pb-12 sm:pt-20 sm:pb-16 md:py-20 lg:py-32 overflow-hidden">
+        <div className="mx-auto max-w-6xl text-center px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight mb-4 sm:mb-6">
-              <span className="text-blue-600 block sm:inline">
-                Controle seus Gastos
+            {/* Título Principal com Gradiente Animado */}
+            <motion.h1 
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-tight mb-6 sm:mb-8 leading-tight"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <span className="relative inline-block">
+                <span className="landing-hero-title">
+                  Controle seus Gastos
+                </span>
+                <div className="landing-hero-glow" />
               </span>
-              <br className="hidden sm:block" />
-              <span className="text-gray-900 block sm:inline">e Agende Compromissos</span>
-            </h1>
+              <br />
+              <span className="landing-hero-title-accent">
+                e Agende Compromissos
+              </span>
+            </motion.h1>
 
-            <p className="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl leading-7 sm:leading-8 text-gray-700 max-w-2xl mx-auto px-2">
-              A plataforma completa para gerenciar suas finanças e compromissos. Integração com
-              Google Calendar, controle de gastos inteligente e muito mais.
-            </p>
+            {/* Subtítulo Melhorado */}
+            <motion.p 
+              className="mt-6 sm:mt-8 text-base sm:text-lg md:text-xl lg:text-2xl leading-7 sm:leading-8 md:leading-9 text-gray-700 max-w-3xl mx-auto px-2 font-medium"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              A plataforma completa para gerenciar suas finanças e compromissos. 
+              <span className="text-blue-600 font-semibold"> Integração com Google Calendar</span>, 
+              controle de gastos inteligente e muito mais.
+            </motion.p>
 
-            <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-x-6">
+            {/* CTAs com Animações Avançadas */}
+            <motion.div 
+              className="mt-10 sm:mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-x-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+            >
               <Link to="/auth" className="w-full sm:w-auto">
-                <Button
-                  size="lg"
-                  className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-6 sm:py-7 bg-amber-500 hover:bg-amber-600 text-white"
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="relative"
                 >
-                  Começar Agora
-                  <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
-                </Button>
+                  <Button
+                    size="lg"
+                    className="landing-cta-primary w-full sm:w-auto text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7"
+                  >
+                    <Zap className="mr-2 h-5 w-5" />
+                    Começar Agora
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </motion.div>
               </Link>
               <Link to="#features" className="w-full sm:w-auto">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8">
-                  Saiba Mais
-                </Button>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="landing-cta-secondary w-full sm:w-auto text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7"
+                  >
+                    Saiba Mais
+                  </Button>
+                </motion.div>
               </Link>
-            </div>
+            </motion.div>
 
-            {/* Stats - Mobile Optimized */}
-            <div className="mt-12 sm:mt-16 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-8">
+            {/* Stats com Design Moderno */}
+            <motion.div 
+              className="mt-16 sm:mt-20 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+            >
               {stats.map((stat, index) => (
                 <motion.div
                   key={stat.label}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="text-center"
+                  transition={{ duration: 0.5, delay: 0.7 + index * 0.1 }}
+                  whileHover={{ y: -6 }}
+                  className="relative group w-full"
                 >
-                  <div className="text-2xl sm:text-3xl font-bold text-blue-600">{stat.value}</div>
-                  <div className="text-xs sm:text-sm text-gray-700 mt-1">{stat.label}</div>
+                  <div className="landing-stats-card">
+                    <div className="landing-stats-value">
+                      {stat.value}
+                    </div>
+                    <div className="landing-stats-label">
+                      {stat.label}
+                    </div>
+                  </div>
                 </motion.div>
               ))}
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* Features Section - Mobile Optimized */}
-      <section id="features" className="container py-12 sm:py-16 md:py-20 relative border-t-2 border-gray-200 bg-gray-50/50 px-4 sm:px-6">
-        <div className="mx-auto max-w-2xl text-center mb-8 sm:mb-12 md:mb-16 px-2">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-3 sm:mb-4 text-gray-900">
-            Recursos Poderosos
-          </h2>
-          <p className="text-sm sm:text-base md:text-lg text-gray-700">
-            Tudo que você precisa para gerenciar suas finanças e compromissos
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map((feature, index) => {
-            const Icon = feature.icon
-            return (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <ShineBorder className="h-full" color="#f59e0b" borderRadius={12}>
-                  <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-shadow">
-                    <CardHeader>
-                      <div
-                        className={`mb-4 flex h-12 w-12 items-center justify-center rounded-lg ${feature.color} p-2`}
-                      >
-                        <Icon className="h-6 w-6 text-white" />
-                      </div>
-                      <CardTitle className="text-xl text-gray-900">{feature.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <CardDescription className="text-base text-gray-700">
-                        {feature.description}
-                      </CardDescription>
-                    </CardContent>
-                  </Card>
-                </ShineBorder>
-              </motion.div>
-            )
-          })}
-        </div>
-      </section>
-
-      {/* Benefits Section - Mobile Optimized */}
-      <section id="benefits" className="container py-12 sm:py-16 md:py-20 relative border-t-2 border-gray-200 bg-white px-4 sm:px-6">
-        <div className="mx-auto max-w-6xl">
-          <div className="text-center mb-8 sm:mb-12 md:mb-16 px-2">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-3 sm:mb-4 text-gray-900">
-              Benefícios Exclusivos
+      {/* Features Section - Ultra Premium */}
+      <section id="features" className="container py-16 sm:py-20 md:py-28 relative px-4 sm:px-6">
+        {/* Background decorativo */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-50/30 to-transparent" />
+        
+        <div className="relative">
+          <motion.div 
+            className="mx-auto max-w-3xl text-center mb-12 sm:mb-16 md:mb-20 px-2"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <motion.div 
+              className="landing-badge landing-badge-blue mb-6"
+              whileHover={{ scale: 1.05 }}
+            >
+              <Zap className="h-4 w-4" />
+              <span>RECURSOS PODEROSOS</span>
+            </motion.div>
+            <h2 className="landing-section-title landing-text-gradient-blue mb-5 sm:mb-6">
+              Tudo que você precisa
             </h2>
-            <p className="text-sm sm:text-base md:text-lg text-gray-700">
-              Descubra por que milhares de usuários escolhem o Thess+
+            <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed max-w-2xl mx-auto">
+              Ferramentas profissionais para gerenciar suas finanças e compromissos com <span className="text-blue-600 font-semibold">máxima eficiência</span>
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {benefits.map((benefit, index) => {
-              const Icon = benefit.icon
+          <div className="grid grid-cols-1 gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
+            {features.map((feature, index) => {
+              const Icon = feature.icon
               return (
                 <motion.div
-                  key={benefit.title}
+                  key={feature.title}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  whileHover={{ y: -8 }}
+                  className="group"
                 >
-                  <MagicCard className="h-full p-6 hover:scale-105 transition-transform duration-300">
-                    <div className="flex flex-col h-full">
-                      <div
-                        className={`mb-4 flex h-14 w-14 items-center justify-center rounded-xl ${benefit.gradient} p-3 shadow-lg`}
-                      >
-                        <Icon className="h-7 w-7 text-white" />
-                      </div>
-                      <h3 className="font-bold text-xl mb-3 text-gray-900">{benefit.title}</h3>
-                      <p className="text-gray-700 leading-relaxed flex-grow">
-                        {benefit.description}
-                      </p>
-                      <div className="mt-4 flex items-center text-primary text-sm font-medium">
-                        <CheckCircle2 className="h-4 w-4 mr-2" />
-                        <span>Incluído</span>
-                      </div>
-                    </div>
-                  </MagicCard>
+                  <div className="relative h-full">
+                    <Card className="landing-feature-card h-full">
+                      <CardHeader className="relative">
+                        <motion.div
+                          className={`landing-feature-icon mb-5 flex items-center justify-center ${feature.color} p-3`}
+                          whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <Icon className="h-8 w-8 text-white" />
+                        </motion.div>
+                        <CardTitle className="landing-feature-title text-xl md:text-2xl">
+                          {feature.title}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="relative">
+                        <CardDescription className="text-sm md:text-base text-gray-700 leading-relaxed">
+                          {feature.description}
+                        </CardDescription>
+                        
+                        {/* Indicador de hover */}
+                        <motion.div 
+                          className="mt-4 flex items-center text-amber-600 font-semibold text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                          initial={{ x: -10 }}
+                          whileHover={{ x: 0 }}
+                        >
+                          <span>Saiba mais</span>
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </motion.div>
+                      </CardContent>
+                    </Card>
+                  </div>
                 </motion.div>
               )
             })}
@@ -684,96 +736,286 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing Section - Mobile Optimized */}
-      <section id="pricing" className="relative py-12 sm:py-16 md:py-24 border-t-2 border-gray-200 bg-white">
-        <div className="container px-4 sm:px-6">
-          <div className="max-w-4xl mx-auto">
-            {/* Header */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="text-center mb-8 sm:mb-12 md:mb-16 px-2"
+      {/* Benefits Section - Premium Redesign */}
+      <section id="benefits" className="container py-16 sm:py-20 md:py-28 relative px-4 sm:px-6">
+        {/* Decorative background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-amber-50/20 via-transparent to-blue-50/20" />
+        
+        <div className="relative mx-auto max-w-7xl">
+          <motion.div 
+            className="text-center mb-12 sm:mb-16 md:mb-20 px-2"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <motion.div 
+              className="landing-badge landing-badge-amber mb-6"
+              whileHover={{ scale: 1.05 }}
             >
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
-                O Plano Completo
-              </h2>
-              <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
-                Tudo que você precisa para dominar suas finanças em um único plano
-              </p>
+              <Star className="h-4 w-4" />
+              <span>BENEFÍCIOS EXCLUSIVOS</span>
             </motion.div>
+            <h2 className="landing-section-title mb-5 sm:mb-6">
+              <span className="landing-text-gradient-blue">
+                Descubra por que milhares
+              </span>
+              <br />
+              <span className="landing-text-gradient-amber">
+                escolhem o Thess+
+              </span>
+            </h2>
+            <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed max-w-3xl mx-auto">
+              Uma plataforma completa desenvolvida para <span className="text-amber-600 font-semibold">transformar sua gestão financeira</span>
+            </p>
+          </motion.div>
 
-            {/* Pricing Card - Clean Design */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {benefits.map((benefit, index) => {
+              const Icon = benefit.icon
+              return (
+                <motion.div
+                  key={benefit.title}
+                  initial={{ opacity: 0, y: 40, scale: 0.9 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ 
+                    duration: 0.6, 
+                    delay: index * 0.1,
+                    type: "spring",
+                    stiffness: 100
+                  }}
+                  whileHover={{ y: -12, scale: 1.02 }}
+                  className="group"
+                >
+                  <div className="relative h-full">
+                    <div className="landing-benefit-card">
+                      <div className="relative flex flex-col h-full">
+                        {/* Ícone com animação */}
+                        <motion.div
+                          className={`landing-benefit-icon mb-6 flex items-center justify-center ${benefit.gradient} p-4`}
+                          whileHover={{ 
+                            rotate: [0, -5, 5, -5, 0],
+                            scale: 1.15
+                          }}
+                          transition={{ duration: 0.6 }}
+                        >
+                          <Icon className="h-8 w-8 text-white" />
+                        </motion.div>
+                        
+                        {/* Título com gradiente no hover */}
+                        <h3 className="landing-benefit-title text-xl md:text-2xl mb-4">
+                          {benefit.title}
+                        </h3>
+                        
+                        {/* Descrição */}
+                        <p className="text-gray-700 leading-relaxed flex-grow text-sm md:text-base">
+                          {benefit.description}
+                        </p>
+                        
+                        {/* Badge de inclusão com animação */}
+                        <motion.div 
+                          className="mt-6 flex items-center gap-2 text-amber-600 font-bold text-sm"
+                          initial={{ opacity: 0.7 }}
+                          whileHover={{ opacity: 1, x: 5 }}
+                        >
+                          <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
+                          <span>Incluído no plano</span>
+                        </motion.div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+
+          {/* Seção extra de confiança */}
+          <motion.div 
+            className="landing-trust-section mt-16 sm:mt-20"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 items-center text-center">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="flex flex-col items-center"
+              >
+                <Shield className="h-12 w-12 mb-4 text-amber-300" />
+                <h4 className="text-2xl sm:text-3xl font-bold mb-2">100%</h4>
+                <p className="text-blue-100">Seguro e Confiável</p>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="flex flex-col items-center"
+              >
+                <Users className="h-12 w-12 mb-4 text-amber-300" />
+                <h4 className="text-2xl sm:text-3xl font-bold mb-2">5.000+</h4>
+                <p className="text-blue-100">Usuários Satisfeitos</p>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="flex flex-col items-center"
+              >
+                <TrendingUp className="h-12 w-12 mb-4 text-amber-300" />
+                <h4 className="text-2xl sm:text-3xl font-bold mb-2">98%</h4>
+                <p className="text-blue-100">Taxa de Satisfação</p>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Pricing Section - Ultra Premium */}
+      <section id="pricing" className="relative py-16 sm:py-20 md:py-28 overflow-hidden">
+        {/* Animated gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-amber-50/30" />
+        <div className="absolute inset-0">
+          <AnimatedGridPattern
+            width={80}
+            height={80}
+            className="opacity-[0.02]"
+          />
+        </div>
+
+        <div className="container px-4 sm:px-6 relative">
+          <div className="max-w-5xl mx-auto">
+            {/* Header */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="bg-white rounded-xl sm:rounded-2xl border-2 border-gray-200 shadow-lg overflow-hidden"
+              className="text-center mb-12 sm:mb-16 px-2"
             >
-              <div className="p-6 sm:p-8 md:p-12">
-                {/* Badge */}
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 mb-6">
-                  <Star className="h-3.5 w-3.5 text-amber-500" />
-                  <span className="text-xs font-semibold text-amber-600">Plano Premium</span>
-                </div>
+            <motion.div 
+              className="landing-badge landing-badge-blue mb-6"
+              whileHover={{ scale: 1.05 }}
+            >
+              <DollarSign className="h-4 w-4" />
+              <span>INVESTIMENTO INTELIGENTE</span>
+            </motion.div>
+            <h2 className="landing-section-title landing-text-gradient-blue mb-5">
+              O Plano Completo
+            </h2>
+              <p className="text-base sm:text-lg md:text-xl text-gray-700 max-w-2xl mx-auto leading-relaxed">
+                Tudo que você precisa para <span className="text-blue-600 font-semibold">dominar suas finanças</span> em um único plano
+              </p>
+            </motion.div>
 
-                {/* Title */}
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                  Plano Thess+
-                </h3>
-                <p className="text-gray-600 mb-8">
-                  Acesso total a todas as funcionalidades avançadas
-                </p>
+            {/* Pricing Card - Ultra Premium */}
+            <motion.div
+              initial={{ opacity: 0, y: 40, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, type: "spring" }}
+              className="relative"
+            >
+              <div className="landing-pricing-card">
+                {/* Floating orbs */}
+                <div className="landing-orb-amber top-0 right-0" />
+                <div className="landing-orb-blue bottom-0 left-0" />
 
-                {/* Price */}
-                <div className="text-center mb-6 sm:mb-10 pb-6 sm:pb-10 border-b border-gray-200">
-                  <div className="flex items-baseline justify-center gap-2 mb-2 sm:mb-3">
-                    <span className="text-5xl sm:text-6xl md:text-7xl font-bold text-blue-600">
-                      R$ 45
-                    </span>
-                    <span className="text-lg sm:text-xl text-gray-600">/mês</span>
-                  </div>
-                  <p className="text-xs sm:text-sm text-gray-500">
-                    Sem taxas ocultas • Cancele quando quiser
+                <div className="relative p-8 sm:p-10 md:p-14">
+                  {/* Badge Premium */}
+                  <motion.div 
+                    className="landing-badge landing-badge-gradient mb-8"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    <span>PLANO PREMIUM</span>
+                    <Sparkles className="h-4 w-4" />
+                  </motion.div>
+
+                  {/* Title */}
+                  <h3 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">
+                    Plano Thess+
+                  </h3>
+                  <p className="text-gray-600 text-lg mb-10">
+                    Acesso total a todas as funcionalidades avançadas
                   </p>
-                </div>
 
-                {/* Features List */}
-                <div className="mb-6 sm:mb-10">
-                  <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">
-                    Recursos Incluídos
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                    {planFeatures.map((feature, index) => (
-                      <div
-                        key={index}
-                        className="flex items-start gap-2 sm:gap-3 py-1.5 sm:py-2"
-                      >
-                        <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 mt-0.5 flex-shrink-0" />
-                        <span className="text-gray-700 text-xs sm:text-sm md:text-base leading-relaxed">
-                          {feature}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* CTA Button */}
-                <div className="text-center pt-4 sm:pt-6 border-t border-gray-200">
-                  <Link to="/checkout" className="inline-block w-full sm:w-auto">
-                    <Button
-                      size="lg"
-                      className="w-full sm:w-auto text-base sm:text-lg px-8 sm:px-12 py-5 sm:py-6 bg-amber-500 hover:bg-amber-600 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+                  {/* Price Display - Destaque */}
+                  <div className="text-center mb-10 pb-10 border-b-2 border-gray-200">
+                    <motion.div 
+                      className="inline-block"
+                      whileHover={{ scale: 1.05 }}
                     >
-                      Assinar Agora
-                      <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
-                    </Button>
-                  </Link>
-                  <p className="mt-3 sm:mt-4 text-xs text-gray-500">
-                    Sem compromisso • Cancele a qualquer momento
-                  </p>
+                      <div className="flex items-baseline justify-center gap-3 mb-4">
+                        <span className="landing-pricing-value">
+                          R$ 45
+                        </span>
+                        <span className="text-xl sm:text-2xl text-gray-600 font-bold">/mês</span>
+                      </div>
+                      <div className="flex items-center justify-center gap-4 text-sm">
+                        <div className="flex items-center gap-1 text-green-600 font-semibold">
+                          <CheckCircle2 className="h-4 w-4" />
+                          <span>Sem taxas ocultas</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-green-600 font-semibold">
+                          <CheckCircle2 className="h-4 w-4" />
+                          <span>Cancele quando quiser</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </div>
+
+                  {/* Features List - Melhorado */}
+                  <div className="mb-10">
+                    <h4 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                      <Sparkles className="h-6 w-6 text-amber-500" />
+                      Recursos Incluídos
+                    </h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {planFeatures.map((feature, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, x: -20 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.4, delay: index * 0.05 }}
+                          whileHover={{ x: 5 }}
+                          className="landing-pricing-feature flex items-start gap-3"
+                        >
+                          <CheckCircle2 className="h-6 w-6 text-amber-500 mt-0.5 flex-shrink-0" />
+                          <span className="text-gray-800 text-sm md:text-base font-medium leading-relaxed">
+                            {feature}
+                          </span>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* CTA Button - Ultra Premium */}
+                  <div className="text-center pt-8 border-t-2 border-gray-200">
+                    <Link to="/checkout" className="inline-block w-full sm:w-auto">
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="relative"
+                      >
+                        <Button
+                          size="lg"
+                          className="landing-pricing-cta w-full sm:w-auto text-lg sm:text-xl px-12 sm:px-16 py-6 sm:py-8"
+                        >
+                          <Zap className="mr-2 h-6 w-6" />
+                          <span>Assinar Agora</span>
+                          <ArrowRight className="ml-2 h-6 w-6" />
+                        </Button>
+                      </motion.div>
+                    </Link>
+                    <motion.p 
+                      className="mt-5 text-sm text-gray-600 flex items-center justify-center gap-2"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.5 }}
+                    >
+                      <Shield className="h-4 w-4 text-green-600" />
+                      <span>Garantia de 7 dias • 100% seguro</span>
+                    </motion.p>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -781,36 +1023,123 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* CTA Section - Mobile Optimized */}
-      <section className="container py-12 sm:py-16 md:py-20 relative border-t-2 border-gray-200 bg-white px-4 sm:px-6">
+      {/* CTA Section - Ultra Premium */}
+      <section className="container py-16 sm:py-20 md:py-28 relative px-4 sm:px-6 overflow-hidden">
+        {/* Decorative Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-amber-50" />
+        
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="relative"
+          transition={{ duration: 0.7, type: "spring" }}
+          className="relative max-w-6xl mx-auto"
         >
-          <Card className="relative overflow-hidden border-2 border-amber-500/50">
-            <div className="absolute inset-0 bg-amber-500/10"></div>
-            <CardContent className="relative p-6 sm:p-8 md:p-12 text-center">
-              <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 text-gray-900">Pronto para começar?</h2>
-              <p className="text-sm sm:text-base md:text-lg text-gray-700 mb-6 sm:mb-8 max-w-2xl mx-auto px-2">
-                Junte-se a milhares de usuários que já estão organizando suas finanças e
+          <div className="landing-cta-section relative overflow-hidden">
+            {/* Floating orbs */}
+            <div className="landing-orb-amber top-0 right-0" />
+            <div className="landing-orb-blue bottom-0 left-0" />
+
+            <CardContent className="relative p-8 sm:p-12 md:p-16 lg:p-20 text-center">
+              {/* Badge */}
+              <motion.div 
+                className="landing-badge landing-badge-white mb-8"
+                whileHover={{ scale: 1.05 }}
+              >
+                <Sparkles className="h-4 w-4" />
+                <span>COMECE HOJE MESMO</span>
+              </motion.div>
+
+              {/* Título */}
+              <motion.h2 
+                className="landing-cta-title text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-6 leading-tight"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                Pronto para transformar
+                <br />
+                <span className="landing-cta-title-accent">
+                  suas finanças?
+                </span>
+              </motion.h2>
+
+              {/* Descrição */}
+              <motion.p 
+                className="text-base sm:text-lg md:text-xl text-blue-100 mb-10 max-w-3xl mx-auto leading-relaxed"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                Junte-se a <span className="text-amber-300 font-bold">milhares de usuários</span> que já estão organizando suas finanças e
                 compromissos com o Thess+
-              </p>
-              <div className="flex items-center justify-center gap-4 flex-wrap">
+              </motion.p>
+
+              {/* CTAs */}
+              <motion.div 
+                className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
                 <Link to="/auth" className="w-full sm:w-auto">
-                  <Button
-                    size="lg"
-                    className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 bg-amber-500 hover:bg-amber-600 text-white"
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="relative"
                   >
-                    Começar Agora
-                    <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  </Button>
+                    <Button
+                      size="lg"
+                      className="landing-cta-white-button w-full sm:w-auto text-lg sm:text-xl px-10 sm:px-14 py-6 sm:py-8"
+                    >
+                      <Zap className="mr-2 h-6 w-6 text-amber-500" />
+                      <span>Começar Agora</span>
+                      <ArrowRight className="ml-2 h-6 w-6" />
+                    </Button>
+                  </motion.div>
                 </Link>
-              </div>
+                <Link to="#pricing" className="w-full sm:w-auto">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="landing-cta-outline-button w-full sm:w-auto text-lg sm:text-xl px-10 sm:px-14 py-6 sm:py-8"
+                    >
+                      Ver Preços
+                    </Button>
+                  </motion.div>
+                </Link>
+              </motion.div>
+
+              {/* Trust indicators */}
+              <motion.div 
+                className="mt-12 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-white/90"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+              >
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-amber-300" />
+                  <span className="text-sm font-semibold">Sem cartão de crédito</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-amber-300" />
+                  <span className="text-sm font-semibold">Cancele a qualquer momento</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-amber-300" />
+                  <span className="text-sm font-semibold">Suporte 24/7</span>
+                </div>
+              </motion.div>
             </CardContent>
-          </Card>
+          </div>
         </motion.div>
       </section>
 

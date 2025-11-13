@@ -66,10 +66,20 @@ export default {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        'gradient': {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
+        'border-beam': {
+          '0%': { offsetDistance: '0%' },
+          '100%': { offsetDistance: '100%' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'gradient': 'gradient 8s ease infinite',
+        'border-beam': 'border-beam calc(var(--duration)*1s) linear infinite',
       },
     },
   },

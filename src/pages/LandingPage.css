@@ -1,0 +1,847 @@
+/* ============================================
+   LANDING PAGE - CSS ISOLADO E ESPECÍFICO
+   ============================================ */
+
+/* Reset e isolamento - Força light mode */
+.landing-page-wrapper {
+  /* Força modo claro */
+  background: white !important;
+  color: #111827 !important;
+  color-scheme: light !important;
+}
+
+.landing-page-wrapper * {
+  /* Garante que cores não sejam sobrescritas */
+  --tw-text-opacity: 1 !important;
+}
+
+/* ============================================
+   ANIMAÇÕES PERSONALIZADAS
+   ============================================ */
+
+@keyframes landing-gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes landing-border-beam {
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+@keyframes landing-shimmer {
+  0% {
+    transform: translateX(-200%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(200%) skewX(-12deg);
+  }
+}
+
+@keyframes landing-pulse-glow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes landing-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes landing-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes landing-cta-pulse {
+  0%, 100% {
+    box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4), 0 0 20px rgba(245, 158, 11, 0.2);
+  }
+  50% {
+    box-shadow: 0 15px 40px rgba(245, 158, 11, 0.6), 0 0 30px rgba(245, 158, 11, 0.4);
+  }
+}
+
+@keyframes landing-cta-glow {
+  0%, 100% {
+    background-position: 0% 50%;
+    opacity: 0.7;
+  }
+  50% {
+    background-position: 100% 50%;
+    opacity: 1;
+  }
+}
+
+/* Classes de animação */
+.landing-animate-gradient {
+  animation: landing-gradient 8s ease infinite !important;
+  background-size: 200% 100% !important;
+}
+
+.landing-animate-border-beam {
+  animation: landing-border-beam calc(var(--duration, 15) * 1s) linear infinite !important;
+}
+
+.landing-animate-shimmer {
+  animation: landing-shimmer 2s ease-in-out infinite !important;
+}
+
+.landing-animate-pulse-glow {
+  animation: landing-pulse-glow 3s ease-in-out infinite !important;
+}
+
+.landing-animate-float {
+  animation: landing-float 3s ease-in-out infinite !important;
+}
+
+.landing-animate-scale-in {
+  animation: landing-scale-in 0.6s ease-out !important;
+}
+
+/* ============================================
+   BACKGROUNDS E GRADIENTES
+   ============================================ */
+
+.landing-page-wrapper {
+  background: linear-gradient(to bottom right, #ffffff, #eff6ff, #fffbeb) !important;
+  min-height: 100vh !important;
+}
+
+.landing-bg-pattern {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  pointer-events: none;
+}
+
+.landing-gradient-overlay {
+  background: linear-gradient(
+    to bottom right,
+    rgba(59, 130, 246, 0.05),
+    transparent,
+    rgba(245, 158, 11, 0.05)
+  ) !important;
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+
+.landing-hero-title {
+  background: linear-gradient(to right, #2563eb, #4f46e5, #2563eb) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-size: 200% 100% !important;
+  animation: landing-gradient 8s ease infinite !important;
+}
+
+.landing-hero-title-accent {
+  background: linear-gradient(to right, #f59e0b, #ea580c, #f59e0b) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-size: 200% 100% !important;
+  animation: landing-gradient 8s ease infinite !important;
+}
+
+.landing-hero-glow {
+  position: absolute;
+  inset: -4px;
+  background: linear-gradient(to right, rgba(37, 99, 235, 0.2), rgba(79, 70, 229, 0.2), rgba(37, 99, 235, 0.2)) !important;
+  filter: blur(32px) !important;
+  z-index: -1;
+  animation: landing-pulse-glow 3s ease-in-out infinite !important;
+}
+
+.landing-cta-primary {
+  background: linear-gradient(to right, #f59e0b, #ea580c, #f59e0b) !important;
+  background-size: 200% 100% !important;
+  color: white !important;
+  font-weight: 700 !important;
+  box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4), 0 0 20px rgba(245, 158, 11, 0.2) !important;
+  transition: all 0.3s ease !important;
+  position: relative;
+  overflow: hidden;
+  border: none !important;
+  animation: landing-cta-pulse 2s ease-in-out infinite !important;
+}
+
+.landing-cta-primary:hover {
+  background-position: 100% 0 !important;
+  box-shadow: 0 15px 40px rgba(245, 158, 11, 0.6), 0 0 30px rgba(245, 158, 11, 0.4) !important;
+  transform: scale(1.05) !important;
+  animation: none !important;
+}
+
+.landing-cta-primary::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg, #f59e0b, #ea580c, #f59e0b, #ea580c);
+  background-size: 300% 300%;
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0.7;
+  animation: landing-cta-glow 3s ease infinite;
+}
+
+.landing-cta-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.landing-cta-primary:hover::after {
+  transform: translateX(100%);
+}
+
+.landing-cta-secondary {
+  border: 2px solid #2563eb !important;
+  color: #2563eb !important;
+  background: transparent !important;
+  font-weight: 600 !important;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.1) !important;
+  transition: all 0.3s ease !important;
+}
+
+.landing-cta-secondary:hover {
+  background: #eff6ff !important;
+  box-shadow: 0 15px 30px rgba(37, 99, 235, 0.2) !important;
+  transform: scale(1.05) !important;
+}
+
+.landing-stats-card {
+  background: white !important;
+  border: 2px solid #e5e7eb !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  padding: 1.75rem 1.25rem !important;
+  border-radius: 1rem !important;
+  height: 100% !important;
+  min-height: 130px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  position: relative !important;
+  overflow: hidden !important;
+  width: 100% !important;
+}
+
+.landing-stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(to right, #2563eb, #4f46e5, #2563eb);
+  background-size: 200% 100%;
+  animation: landing-gradient 3s ease infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.landing-stats-card:hover {
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.2), 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  border-color: #2563eb !important;
+  transform: translateY(-6px) !important;
+  background: linear-gradient(to bottom, white, #f8fafc) !important;
+}
+
+.landing-stats-card:hover::before {
+  opacity: 1;
+}
+
+.landing-stats-value {
+  font-size: 2.75rem !important;
+  font-weight: 900 !important;
+  background: linear-gradient(to bottom right, #2563eb, #4f46e5) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  line-height: 1.2 !important;
+  margin-bottom: 0.75rem !important;
+  display: block !important;
+  letter-spacing: -0.02em !important;
+}
+
+.landing-stats-card:hover .landing-stats-value {
+  background: linear-gradient(to bottom right, #1d4ed8, #4338ca) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  transform: scale(1.05) !important;
+  transition: transform 0.3s ease !important;
+}
+
+.landing-stats-label {
+  color: #374151 !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+  margin-top: 0.5rem !important;
+  display: block !important;
+}
+
+@media (min-width: 640px) {
+  .landing-stats-label {
+    font-size: 1rem !important;
+  }
+}
+
+@media (min-width: 640px) {
+  .landing-stats-card {
+    min-height: 150px !important;
+    padding: 2rem 1.5rem !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .landing-stats-card {
+    min-height: 160px !important;
+    padding: 2.25rem 1.75rem !important;
+  }
+  
+  .landing-stats-value {
+    font-size: 3.25rem !important;
+  }
+  
+  .landing-stats-label {
+    font-size: 1.125rem !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .landing-stats-card {
+    min-height: 170px !important;
+    padding: 2.5rem 2rem !important;
+  }
+}
+
+/* ============================================
+   FEATURES SECTION
+   ============================================ */
+
+.landing-feature-card {
+  background: white !important;
+  border: 2px solid #e5e7eb !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.3s ease !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.landing-feature-card:hover {
+  border-color: #f59e0b !important;
+  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-4px) !important;
+}
+
+.landing-feature-icon {
+  width: 4rem !important;
+  height: 4rem !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.5s ease !important;
+}
+
+.landing-feature-card:hover .landing-feature-icon {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+  transform: rotate(-5deg) scale(1.1) !important;
+}
+
+.landing-feature-title {
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  color: #111827 !important;
+  transition: color 0.3s ease !important;
+  line-height: 1.4 !important;
+}
+
+.landing-feature-card:hover .landing-feature-title {
+  color: #2563eb !important;
+}
+
+/* ============================================
+   BENEFITS SECTION
+   ============================================ */
+
+.landing-benefit-card {
+  background: white !important;
+  border: 2px solid #e5e7eb !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.3s ease !important;
+  padding: 2rem !important;
+  border-radius: 1rem !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.landing-benefit-card:hover {
+  border-color: #f59e0b !important;
+  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-4px) !important;
+}
+
+.landing-benefit-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom right,
+    rgba(245, 158, 11, 0.1),
+    transparent,
+    rgba(59, 130, 246, 0.1)
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.landing-benefit-card:hover::before {
+  opacity: 1;
+}
+
+.landing-benefit-icon {
+  width: 4rem !important;
+  height: 4rem !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.6s ease !important;
+}
+
+.landing-benefit-card:hover .landing-benefit-icon {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+  transform: rotate(-5deg) scale(1.15) !important;
+}
+
+.landing-benefit-title {
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+  color: #111827 !important;
+  transition: all 0.3s ease !important;
+  line-height: 1.3 !important;
+  margin-bottom: 1rem !important;
+}
+
+.landing-benefit-card:hover .landing-benefit-title {
+  color: #f59e0b !important;
+}
+
+.landing-trust-section {
+  background: linear-gradient(to right, #2563eb, #4f46e5, #2563eb) !important;
+  background-size: 200% 100% !important;
+  animation: landing-gradient 8s ease infinite !important;
+  color: white !important;
+  padding: 3rem !important;
+  border-radius: 1.5rem !important;
+  box-shadow: 0 20px 40px rgba(37, 99, 235, 0.3) !important;
+}
+
+/* ============================================
+   PRICING SECTION
+   ============================================ */
+
+.landing-pricing-card {
+  background: white !important;
+  border: 3px solid #e5e7eb !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.05) !important;
+  border-radius: 1.5rem !important;
+  overflow: hidden !important;
+  position: relative !important;
+  transition: all 0.3s ease !important;
+}
+
+.landing-pricing-card:hover {
+  border-color: #f59e0b !important;
+  box-shadow: 0 20px 40px rgba(245, 158, 11, 0.2), 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-2px) !important;
+}
+
+.landing-pricing-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom right,
+    rgba(245, 158, 11, 0.05),
+    transparent,
+    rgba(59, 130, 246, 0.05)
+  );
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+
+.landing-pricing-card:hover::before {
+  opacity: 1;
+}
+
+.landing-pricing-badge {
+  background: linear-gradient(to right, #f59e0b, #ea580c) !important;
+  color: white !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3) !important;
+  animation: landing-pulse-glow 2s ease-in-out infinite !important;
+}
+
+.landing-pricing-value {
+  font-size: 4.5rem !important;
+  font-weight: 900 !important;
+  background: linear-gradient(to right, #f59e0b, #ea580c, #f59e0b) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-size: 200% 100% !important;
+  animation: landing-gradient 8s ease infinite !important;
+}
+
+.landing-pricing-feature {
+  transition: all 0.2s ease !important;
+  padding: 0.75rem !important;
+  border-radius: 0.75rem !important;
+}
+
+.landing-pricing-feature:hover {
+  background: rgba(245, 158, 11, 0.05) !important;
+  transform: translateX(5px) !important;
+}
+
+.landing-pricing-cta {
+  background: linear-gradient(to right, #f59e0b, #ea580c, #f59e0b) !important;
+  background-size: 200% 100% !important;
+  color: white !important;
+  font-weight: 700 !important;
+  box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4), 0 0 20px rgba(245, 158, 11, 0.2) !important;
+  transition: all 0.3s ease !important;
+  position: relative;
+  overflow: hidden;
+  border: none !important;
+  animation: landing-cta-pulse 2s ease-in-out infinite !important;
+}
+
+.landing-pricing-cta:hover {
+  background-position: 100% 0 !important;
+  box-shadow: 0 15px 40px rgba(245, 158, 11, 0.6), 0 0 30px rgba(245, 158, 11, 0.4) !important;
+  transform: scale(1.05) !important;
+  animation: none !important;
+}
+
+.landing-pricing-cta::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg, #f59e0b, #ea580c, #f59e0b, #ea580c);
+  background-size: 300% 300%;
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0.7;
+  animation: landing-cta-glow 3s ease infinite;
+}
+
+.landing-pricing-cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.landing-pricing-cta:hover::after {
+  transform: translateX(100%);
+}
+
+/* Floating orbs */
+.landing-orb-amber {
+  position: absolute;
+  width: 16rem;
+  height: 16rem;
+  background: rgba(245, 158, 11, 0.2);
+  border-radius: 50%;
+  filter: blur(60px);
+  animation: landing-pulse-glow 4s ease-in-out infinite;
+}
+
+.landing-orb-blue {
+  position: absolute;
+  width: 16rem;
+  height: 16rem;
+  background: rgba(59, 130, 246, 0.2);
+  border-radius: 50%;
+  filter: blur(60px);
+  animation: landing-pulse-glow 4s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+/* ============================================
+   CTA SECTION
+   ============================================ */
+
+.landing-cta-section {
+  background: linear-gradient(to bottom right, #2563eb, #4f46e5, #2563eb) !important;
+  background-size: 200% 100% !important;
+  animation: landing-gradient 5s ease infinite !important;
+  border-radius: 1.5rem !important;
+  box-shadow: 0 20px 40px rgba(37, 99, 235, 0.3) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-cta-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom right,
+    rgba(245, 158, 11, 0.2),
+    transparent,
+    rgba(59, 130, 246, 0.2)
+  );
+  animation: landing-gradient 5s ease infinite reverse;
+}
+
+.landing-cta-title {
+  color: white !important;
+  font-weight: 900 !important;
+}
+
+.landing-cta-title-accent {
+  background: linear-gradient(to right, #fcd34d, #fef3c7) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+.landing-cta-white-button {
+  background: white !important;
+  color: #2563eb !important;
+  font-weight: 700 !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.3s ease !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-cta-white-button:hover {
+  background: #f9fafb !important;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3) !important;
+  transform: scale(1.05) !important;
+}
+
+.landing-cta-white-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(37, 99, 235, 0.1),
+    transparent
+  );
+  transform: translateX(-200%) skewX(-12deg);
+  transition: transform 1s ease;
+}
+
+.landing-cta-white-button:hover::before {
+  transform: translateX(200%) skewX(-12deg);
+}
+
+.landing-cta-outline-button {
+  border: 2px solid white !important;
+  color: white !important;
+  background: transparent !important;
+  font-weight: 700 !important;
+  box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.3s ease !important;
+}
+
+.landing-cta-outline-button:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 15px 30px rgba(255, 255, 255, 0.2) !important;
+  transform: scale(1.05) !important;
+}
+
+/* ============================================
+   BADGES E LABELS
+   ============================================ */
+
+.landing-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+}
+
+.landing-badge-blue {
+  background: rgba(239, 246, 255, 1) !important;
+  color: #2563eb !important;
+}
+
+.landing-badge-amber {
+  background: rgba(255, 251, 235, 1) !important;
+  color: #d97706 !important;
+}
+
+.landing-badge-gradient {
+  background: linear-gradient(to right, #f59e0b, #ea580c) !important;
+  color: white !important;
+  box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3) !important;
+}
+
+.landing-badge-white {
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: white !important;
+}
+
+/* ============================================
+   UTILITÁRIOS
+   ============================================ */
+
+.landing-text-gradient-blue {
+  background: linear-gradient(to right, #2563eb, #4f46e5, #2563eb) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-size: 200% 100% !important;
+  animation: landing-gradient 8s ease infinite !important;
+}
+
+.landing-text-gradient-amber {
+  background: linear-gradient(to right, #f59e0b, #ea580c, #f59e0b) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-size: 200% 100% !important;
+  animation: landing-gradient 8s ease infinite !important;
+}
+
+.landing-section-title {
+  font-size: 3rem !important;
+  font-weight: 800 !important;
+  color: #111827 !important;
+  line-height: 1.2 !important;
+}
+
+@media (min-width: 640px) {
+  .landing-section-title {
+    font-size: 3.5rem !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .landing-section-title {
+    font-size: 4rem !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .landing-section-title {
+    font-size: 5rem !important;
+  }
+}
+
+/* ============================================
+   OVERRIDES - Força cores corretas
+   ============================================ */
+
+.landing-page-wrapper .text-gray-900 {
+  color: #111827 !important;
+  font-weight: 700 !important;
+}
+
+.landing-page-wrapper .text-gray-700 {
+  color: #1f2937 !important;
+  font-weight: 500 !important;
+}
+
+.landing-page-wrapper .text-gray-600 {
+  color: #374151 !important;
+  font-weight: 500 !important;
+}
+
+.landing-page-wrapper .text-blue-600 {
+  color: #2563eb !important;
+}
+
+.landing-page-wrapper .text-amber-600 {
+  color: #d97706 !important;
+}
+
+.landing-page-wrapper .bg-white {
+  background-color: white !important;
+}
+
+.landing-page-wrapper .bg-blue-50 {
+  background-color: #eff6ff !important;
+}
+
+.landing-page-wrapper .bg-amber-50 {
+  background-color: #fffbeb !important;
+}
+
+.landing-page-wrapper .bg-gray-50 {
+  background-color: #f9fafb !important;
+}
+
+.landing-page-wrapper .border-gray-200 {
+  border-color: #e5e7eb !important;
+}
+
+/* ============================================
+   RESPONSIVIDADE
+   ============================================ */
+
+@media (max-width: 640px) {
+  .landing-pricing-value {
+    font-size: 3rem !important;
+  }
+  
+  .landing-stats-value {
+    font-size: 2rem !important;
+  }
+}
+

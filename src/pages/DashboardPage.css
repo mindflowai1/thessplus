@@ -1,0 +1,510 @@
+/* ============================================
+   DASHBOARD - CSS PROFISSIONAL E ELEGANTE
+   ============================================ */
+
+/* ============================================
+   ANIMAÇÕES
+   ============================================ */
+
+@keyframes dashboard-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dashboard-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes dashboard-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes dashboard-shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.dashboard-animate-fade-in {
+  animation: dashboard-fade-in 0.5s ease-out;
+}
+
+.dashboard-animate-scale-in {
+  animation: dashboard-scale-in 0.4s ease-out;
+}
+
+/* ============================================
+   HEADER SECTION
+   ============================================ */
+
+.dashboard-header {
+  margin-bottom: 2rem;
+}
+
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(to right, hsl(var(--foreground)), hsl(var(--foreground) / 0.8));
+  -webkit-background-clip: text;
+  background-clip: text;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.dashboard-subtitle {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
+}
+
+/* ============================================
+   SUMMARY CARDS
+   ============================================ */
+
+.dashboard-summary-card {
+  position: relative;
+  overflow: hidden;
+  border: 2px solid hsl(var(--border));
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: hsl(var(--card));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(to right, var(--card-gradient-start), var(--card-gradient-end));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.dashboard-summary-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.05);
+  border-color: var(--card-border-hover);
+}
+
+.dashboard-summary-card:hover::before {
+  transform: scaleX(1);
+}
+
+.dashboard-summary-card-income {
+  --card-gradient-start: #3b82f6;
+  --card-gradient-end: #2563eb;
+  --card-border-hover: #3b82f6;
+}
+
+.dashboard-summary-card-outcome {
+  --card-gradient-start: #ef4444;
+  --card-gradient-end: #dc2626;
+  --card-border-hover: #ef4444;
+}
+
+.dashboard-summary-card-balance {
+  --card-gradient-start: #10b981;
+  --card-gradient-end: #059669;
+  --card-border-hover: #10b981;
+}
+
+.dashboard-summary-card-balance-negative {
+  --card-gradient-start: #ef4444;
+  --card-gradient-end: #dc2626;
+  --card-border-hover: #ef4444;
+}
+
+.dashboard-summary-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-summary-card:hover .dashboard-summary-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.dashboard-summary-icon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.dashboard-summary-card:hover .dashboard-summary-icon::before {
+  opacity: 1;
+}
+
+.dashboard-summary-value {
+  font-size: 1.875rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-top: 0.5rem;
+  transition: all 0.3s ease;
+  letter-spacing: -0.02em;
+}
+
+.dashboard-summary-card:hover .dashboard-summary-value {
+  transform: scale(1.05);
+}
+
+.dashboard-summary-label {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  margin-top: 0.5rem;
+  font-weight: 500;
+}
+
+/* ============================================
+   FILTERS SECTION
+   ============================================ */
+
+.dashboard-filters-card {
+  border: 2px solid hsl(var(--border));
+  transition: all 0.3s ease;
+  background: hsl(var(--card));
+}
+
+.dashboard-filters-card:hover {
+  border-color: hsl(var(--primary) / 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-filter-input {
+  transition: all 0.2s ease;
+  border: 2px solid hsl(var(--input));
+}
+
+.dashboard-filter-input:focus {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
+}
+
+.dashboard-filter-clear-btn {
+  transition: all 0.2s ease;
+}
+
+.dashboard-filter-clear-btn:hover {
+  background: hsl(var(--destructive) / 0.1);
+  color: hsl(var(--destructive));
+}
+
+/* ============================================
+   TRANSACTIONS LIST
+   ============================================ */
+
+.dashboard-transactions-card {
+  border: 2px solid hsl(var(--border));
+  background: hsl(var(--card));
+  transition: all 0.3s ease;
+}
+
+.dashboard-transaction-item {
+  position: relative;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  border: 2px solid transparent;
+  background: hsl(var(--card));
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.dashboard-transaction-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--transaction-color);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.2s ease;
+}
+
+.dashboard-transaction-item:hover {
+  background: hsl(var(--muted) / 0.5);
+  border-color: hsl(var(--border));
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-transaction-item:hover::before {
+  transform: scaleY(1);
+}
+
+.dashboard-transaction-item-selected {
+  background: hsl(var(--primary) / 0.1);
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
+}
+
+.dashboard-transaction-item-selected::before {
+  transform: scaleY(1);
+}
+
+.dashboard-transaction-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-transaction-item:hover .dashboard-transaction-icon {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.dashboard-transaction-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.dashboard-transaction-item:hover .dashboard-transaction-icon::after {
+  opacity: 1;
+}
+
+.dashboard-transaction-amount {
+  font-size: 1.125rem;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  letter-spacing: -0.01em;
+}
+
+.dashboard-transaction-item:hover .dashboard-transaction-amount {
+  transform: scale(1.05);
+}
+
+.dashboard-transaction-income {
+  --transaction-color: #3b82f6;
+}
+
+.dashboard-transaction-outcome {
+  --transaction-color: #ef4444;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.dashboard-btn-primary {
+  background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary) / 0.9));
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px hsl(var(--primary) / 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.dashboard-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px hsl(var(--primary) / 0.4);
+}
+
+.dashboard-btn-primary:hover::before {
+  transform: translateX(100%);
+}
+
+.dashboard-btn-secondary {
+  border: 2px solid hsl(var(--border));
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.dashboard-btn-secondary:hover {
+  border-color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.05);
+  color: hsl(var(--primary));
+  transform: translateY(-1px);
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+
+.dashboard-empty-state {
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.dashboard-empty-icon {
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto 1.5rem;
+  color: hsl(var(--muted-foreground));
+  opacity: 0.5;
+}
+
+.dashboard-empty-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: hsl(var(--foreground));
+}
+
+.dashboard-empty-description {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+  margin-bottom: 1.5rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ============================================
+   LOADING STATE
+   ============================================ */
+
+.dashboard-loading {
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-loading-spinner {
+  animation: dashboard-pulse 1.5s ease-in-out infinite;
+}
+
+/* ============================================
+   CHECKBOX
+   ============================================ */
+
+.dashboard-checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.375rem;
+  border: 2px solid hsl(var(--border));
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  flex-shrink: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: hsl(var(--background));
+}
+
+.dashboard-checkbox:hover {
+  border-color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.05);
+}
+
+.dashboard-checkbox:checked {
+  background: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+}
+
+.dashboard-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .dashboard-title {
+    font-size: 1.5rem;
+  }
+  
+  .dashboard-summary-value {
+    font-size: 1.5rem;
+  }
+  
+  .dashboard-transaction-item {
+    padding: 0.875rem 1rem;
+  }
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+
+.dashboard-gradient-text {
+  background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary) / 0.7));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.dashboard-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+}
+
+.dashboard-divider {
+  height: 1px;
+  background: hsl(var(--border));
+  margin: 1.5rem 0;
+  opacity: 0.5;
+}
+

@@ -82,16 +82,30 @@ function App() {
             <Route
               element={
                 <ProtectedRoute>
-                  <PageTransition>
-                    <AppLayout />
-                  </PageTransition>
+                  <AppLayout />
                 </ProtectedRoute>
               }
             >
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/calendar" element={<CalendarPage />} />
-              <Route path="/limits" element={<LimitsPage />} />
-              <Route path="/account" element={<AccountPage />} />
+              <Route path="/dashboard" element={
+                <PageTransition>
+                  <DashboardPage />
+                </PageTransition>
+              } />
+              <Route path="/calendar" element={
+                <PageTransition>
+                  <CalendarPage />
+                </PageTransition>
+              } />
+              <Route path="/limits" element={
+                <PageTransition>
+                  <LimitsPage />
+                </PageTransition>
+              } />
+              <Route path="/account" element={
+                <PageTransition>
+                  <AccountPage />
+                </PageTransition>
+              } />
             </Route>
           </Routes>
         </AuthProvider>

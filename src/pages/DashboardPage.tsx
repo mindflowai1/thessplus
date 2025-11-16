@@ -26,10 +26,11 @@ import {
   Filter,
   X,
   FileText,
+  LayoutDashboard,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { motion } from 'framer-motion'
-import './DashboardPage.css'
+import { motion, AnimatePresence } from 'framer-motion'
+import './DashboardEngineering.css'
 
 interface Transaction {
   id: string
@@ -220,365 +221,442 @@ export function DashboardPage() {
     endDate !== new Date().toISOString().split('T')[0]
 
   return (
-    <div className="space-y-6 dashboard-animate-fade-in">
-      {/* Header */}
-      <motion.div 
-        className="dashboard-header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        <div>
-          <h1 className="dashboard-title">Dashboard</h1>
-          <p className="dashboard-subtitle">
-            Gerencie suas finanças de forma inteligente
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto dashboard-animate-fade-in">
+        {/* Page Title */}
+        <motion.div 
+          className="mb-6 md:mb-8"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, type: "spring" }}
+        >
+          <div className="flex items-center gap-2 md:gap-3 mb-2">
+            <LayoutDashboard className={cn(
+              "h-6 w-6 md:h-7 md:w-7",
+              "text-amber-500 dark:text-amber-400"
+            )} strokeWidth={2.5} />
+            <h1 className={cn(
+              "text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight",
+              "text-foreground dashboard-page-title"
+            )}>
+              Dashboard
+            </h1>
+          </div>
+          <p className={cn(
+            "text-sm md:text-base lg:text-lg text-muted-foreground md:ml-10",
+            "font-medium dashboard-page-subtitle"
+          )}>
+            Gerencie suas finanças com inteligência e precisão
           </p>
-        </div>
-        <div className="flex items-center gap-2">
+        </motion.div>
+
+        {/* Action Buttons */}
+        <motion.div 
+          className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 mb-4 md:mb-6"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
           <Button
-            variant="outline"
             size="sm"
             onClick={() => setShowFilters(!showFilters)}
-            className="dashboard-btn-secondary"
+            variant="outline"
+            className="dashboard-btn-secondary w-full sm:w-auto"
           >
             <Filter className="h-4 w-4 mr-2" />
-            {showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros'}
+            {showFilters ? 'Ocultar Filtros' : 'Filtros'}
           </Button>
-          <Button size="sm" className="dashboard-btn-primary">
+          <Button size="sm" className="dashboard-btn-primary w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             Nova Transação
           </Button>
-        </div>
-      </motion.div>
-
-      {/* Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-        >
-          <Card className="dashboard-summary-card dashboard-summary-card-income">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-semibold">Total de Entradas</CardTitle>
-              <div className="dashboard-summary-icon bg-blue-100 dark:bg-blue-900/30">
-                <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="dashboard-summary-value text-blue-600 dark:text-blue-400">
-                {formatCurrency(totals.income)}
-              </div>
-              <p className="dashboard-summary-label">
-                {transactions.filter((t) => t.tipo === 'Entrada').length} transação(ões)
-              </p>
-            </CardContent>
-          </Card>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-        >
-          <Card className="dashboard-summary-card dashboard-summary-card-outcome">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-semibold">Total de Saídas</CardTitle>
-              <div className="dashboard-summary-icon bg-red-100 dark:bg-red-900/30">
-                <TrendingDown className="h-5 w-5 text-red-600 dark:text-red-400" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="dashboard-summary-value text-red-600 dark:text-red-400">
-                {formatCurrency(totals.outcome)}
-              </div>
-              <p className="dashboard-summary-label">
-                {transactions.filter((t) => t.tipo === 'Saída').length} transação(ões)
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
+        {/* Summary Cards */}
+        <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-3 mb-4 md:mb-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
+            <Card className="dashboard-summary-card dashboard-summary-card-income">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                <CardTitle className="text-foreground">Total de Entradas</CardTitle>
+                <div className="dashboard-summary-icon bg-blue-500/20 border border-blue-500/30">
+                  <TrendingUp className="h-6 w-6 text-blue-600 dark:text-blue-400" strokeWidth={2.5} />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="dashboard-summary-value text-blue-600 dark:text-blue-400">
+                  {formatCurrency(totals.income)}
+                </div>
+                <p className="dashboard-summary-label mt-2">
+                  <span className="dashboard-badge bg-blue-500/15 border-blue-500/30 text-blue-700 dark:bg-blue-500/15 dark:border-blue-500/30 dark:text-blue-300">
+                    {transactions.filter((t) => t.tipo === 'Entrada').length} transação(ões)
+                  </span>
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.3 }}
-        >
-          <Card className={cn(
-            "dashboard-summary-card",
-            totals.balance >= 0 
-              ? "dashboard-summary-card-balance" 
-              : "dashboard-summary-card-balance-negative"
-          )}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-semibold">Saldo Atual</CardTitle>
-              <div className={cn(
-                "dashboard-summary-icon",
-                totals.balance >= 0
-                  ? "bg-green-100 dark:bg-green-900/30"
-                  : "bg-red-100 dark:bg-red-900/30"
-              )}>
-                <Wallet className={cn(
-                  "h-5 w-5",
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+          >
+            <Card className="dashboard-summary-card dashboard-summary-card-outcome">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                <CardTitle className="text-foreground">Total de Saídas</CardTitle>
+                <div className="dashboard-summary-icon bg-red-500/20 border border-red-500/30">
+                  <TrendingDown className="h-6 w-6 text-red-600 dark:text-red-400" strokeWidth={2.5} />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="dashboard-summary-value text-red-600 dark:text-red-400">
+                  {formatCurrency(totals.outcome)}
+                </div>
+                <p className="dashboard-summary-label mt-2">
+                  <span className="dashboard-badge bg-red-500/15 border-red-500/30 text-red-700 dark:bg-red-500/15 dark:border-red-500/30 dark:text-red-300">
+                    {transactions.filter((t) => t.tipo === 'Saída').length} transação(ões)
+                  </span>
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+          >
+            <Card className={cn(
+              "dashboard-summary-card",
+              totals.balance >= 0 
+                ? "dashboard-summary-card-balance" 
+                : "dashboard-summary-card-balance-negative"
+            )}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                <CardTitle className="text-foreground">Saldo Atual</CardTitle>
+                <div className={cn(
+                  "dashboard-summary-icon border",
+                  totals.balance >= 0
+                    ? "bg-green-500/20 border-green-500/30"
+                    : "bg-red-500/20 border-red-500/30"
+                )}>
+                  <Wallet className={cn(
+                    "h-6 w-6",
+                    totals.balance >= 0
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-red-600 dark:text-red-400"
+                  )} strokeWidth={2.5} />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className={cn(
+                  "dashboard-summary-value",
                   totals.balance >= 0
                     ? "text-green-600 dark:text-green-400"
                     : "text-red-600 dark:text-red-400"
-                )} />
+                )}>
+                  {formatCurrency(totals.balance)}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+
+        {/* Filters */}
+        <AnimatePresence>
+          {showFilters && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="mb-6"
+            >
+              <Card className="dashboard-filters-card">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+                    <Filter className="h-5 w-5 text-amber-500 dark:text-amber-400" />
+                    Filtros Avançados
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground mt-1">
+                    Filtrar transações por período, categoria ou busca
+                  </CardDescription>
+                </div>
+                    {hasActiveFilters && (
+                      <Button 
+                        size="sm" 
+                        onClick={clearFilters}
+                        className="dashboard-filter-clear-btn"
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        Limpar
+                      </Button>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4 md:p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 w-full max-w-full overflow-hidden">
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-foreground">Data Inicial</label>
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            const input = document.getElementById('start-date-input') as HTMLInputElement
+                            if (input) {
+                              if (typeof input.showPicker === 'function') {
+                                input.showPicker()
+                              } else {
+                                input.focus()
+                                input.click()
+                              }
+                            }
+                          }}
+                          className="absolute left-3 top-1/2 -translate-y-1/2 z-20 p-1.5 rounded-md hover:bg-amber-500/10 dark:hover:bg-amber-500/20 transition-colors cursor-pointer"
+                          aria-label="Abrir calendário"
+                        >
+                          <Calendar className="h-4 w-4 text-amber-500 dark:text-amber-400" />
+                        </button>
+                        <Input
+                          id="start-date-input"
+                          type="date"
+                          value={startDate}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStartDate(e.target.value)}
+                          className="dashboard-filter-input pl-10 date-input-light w-full max-w-full"
+                          style={{ 
+                            color: '#000000',
+                            WebkitTextFillColor: '#000000',
+                            fontWeight: '600',
+                            maxWidth: '100%',
+                            boxSizing: 'border-box'
+                          } as React.CSSProperties}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-foreground">Data Final</label>
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            const input = document.getElementById('end-date-input') as HTMLInputElement
+                            if (input) {
+                              if (typeof input.showPicker === 'function') {
+                                input.showPicker()
+                              } else {
+                                input.focus()
+                                input.click()
+                              }
+                            }
+                          }}
+                          className="absolute left-3 top-1/2 -translate-y-1/2 z-20 p-1.5 rounded-md hover:bg-amber-500/10 dark:hover:bg-amber-500/20 transition-colors cursor-pointer"
+                          aria-label="Abrir calendário"
+                        >
+                          <Calendar className="h-4 w-4 text-amber-500 dark:text-amber-400" />
+                        </button>
+                        <Input
+                          id="end-date-input"
+                          type="date"
+                          value={endDate}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEndDate(e.target.value)}
+                          className="dashboard-filter-input pl-10 date-input-light w-full max-w-full"
+                          style={{ 
+                            color: '#000000',
+                            WebkitTextFillColor: '#000000',
+                            fontWeight: '600',
+                            maxWidth: '100%',
+                            boxSizing: 'border-box'
+                          } as React.CSSProperties}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-foreground">Categoria</label>
+                      <Select value={selectedCategory} onValueChange={(value: string) => setSelectedCategory(value)}>
+                        <SelectTrigger className="dashboard-filter-input">
+                          <SelectValue placeholder="Todas as categorias" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="__all__">
+                            Todas as categorias
+                          </SelectItem>
+                          {CATEGORIES.map((cat) => (
+                            <SelectItem key={cat} value={cat}>
+                              {cat}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-foreground">Buscar</label>
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-amber-500 dark:text-amber-400" />
+                        <Input
+                          placeholder="Buscar transações..."
+                          value={searchQuery}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+                          className="dashboard-filter-input pl-10"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Transactions List */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        >
+          <Card className="dashboard-transactions-card">
+            <CardHeader className="p-4 md:p-6">
+              <div className="flex flex-col gap-3 md:gap-4">
+                <div>
+                  <CardTitle className="text-lg md:text-xl font-bold text-foreground flex items-center gap-2">
+                    <FileText className="h-4 w-4 md:h-5 md:w-5 text-amber-500 dark:text-amber-400" />
+                    Transações Recentes
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground mt-1 text-sm">
+                    {loading ? (
+                      'Carregando transações...'
+                    ) : (
+                      <>
+                        {filteredTransactions.length} transação(ões) encontrada(s)
+                        {selectedIds.size > 0 && (
+                          <span className="ml-2 dashboard-gradient-text font-bold">
+                            • {selectedIds.size} selecionada(s)
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </CardDescription>
+                </div>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                  {filteredTransactions.length > 0 && (
+                    <Button
+                      size="sm"
+                      onClick={selectAll}
+                      className="dashboard-btn-secondary w-full sm:w-auto"
+                    >
+                      {selectedIds.size === filteredTransactions.length ? 'Desselecionar' : 'Selecionar Tudo'}
+                    </Button>
+                  )}
+                  {selectedIds.size > 0 && (
+                    <Button 
+                      size="sm" 
+                      onClick={deleteSelected}
+                      className="dashboard-btn-primary bg-red-500/20 hover:bg-red-500/30 border-red-500/30 w-full sm:w-auto"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Excluir ({selectedIds.size})
+                    </Button>
+                  )}
+                </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className={cn(
-                "dashboard-summary-value",
-                totals.balance >= 0
-                  ? "text-green-600 dark:text-green-400"
-                  : "text-red-600 dark:text-red-400"
-              )}>
-                {formatCurrency(totals.balance)}
-              </div>
-              <p className="dashboard-summary-label">
-                Período selecionado
-              </p>
+            <CardContent className="p-4 md:p-6">
+              {loading ? (
+                <div className="dashboard-loading">
+                  <Loader2 className="h-8 w-8 md:h-10 md:w-10 animate-spin dashboard-loading-spinner mb-4" />
+                  <p className="text-sm text-muted-foreground">Carregando suas transações...</p>
+                </div>
+              ) : filteredTransactions.length === 0 ? (
+                <div className="dashboard-empty-state">
+                  <FileText className="dashboard-empty-icon h-10 w-10 md:h-12 md:w-12" />
+                  <h3 className="dashboard-empty-title text-foreground text-base md:text-lg">Nenhuma transação encontrada</h3>
+                  <p className="dashboard-empty-description text-muted-foreground text-sm">
+                    {hasActiveFilters
+                      ? 'Tente ajustar os filtros ou adicione uma nova transação.'
+                      : 'Comece adicionando sua primeira transação.'}
+                  </p>
+                  <Button className="dashboard-btn-primary mt-4 w-full sm:w-auto">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Adicionar Transação
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-2 md:space-y-3">
+                  {filteredTransactions.map((transaction, index) => (
+                    <motion.div
+                      key={transaction.id}
+                      initial={{ opacity: 0, x: -30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.03 }}
+                      className={cn(
+                        'dashboard-transaction-item',
+                        transaction.tipo === 'Entrada' 
+                          ? 'dashboard-transaction-income' 
+                          : 'dashboard-transaction-outcome',
+                        selectedIds.has(transaction.id) && 'dashboard-transaction-item-selected'
+                      )}
+                      onClick={() => toggleSelect(transaction.id)}
+                    >
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.has(transaction.id)}
+                            onChange={() => toggleSelect(transaction.id)}
+                            onClick={(e) => e.stopPropagation()}
+                            className="dashboard-checkbox flex-shrink-0"
+                          />
+                          <div className={cn(
+                            'dashboard-transaction-icon border flex-shrink-0',
+                            transaction.tipo === 'Entrada'
+                              ? 'bg-blue-500/20 border-blue-500/30'
+                              : 'bg-red-500/20 border-red-500/30'
+                          )}>
+                            {transaction.tipo === 'Entrada' ? (
+                              <ArrowUpCircle className="h-4 w-4 md:h-5 md:w-5 text-blue-600 dark:text-blue-400" strokeWidth={2.5} />
+                            ) : (
+                              <ArrowDownCircle className="h-4 w-4 md:h-5 md:w-5 text-red-600 dark:text-red-400" strokeWidth={2.5} />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-bold truncate text-foreground text-sm md:text-base">{transaction.descricao}</div>
+                            <div className="text-xs md:text-sm text-muted-foreground flex flex-wrap items-center gap-2 mt-1">
+                              <span className="dashboard-badge text-xs">{transaction.categoria}</span>
+                              <div className="flex items-center gap-1">
+                                <Calendar className="h-3 w-3 md:h-3.5 md:w-3.5 text-amber-500 dark:text-amber-400" />
+                                <span>{formatDate(transaction.data)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          className={cn(
+                            'dashboard-transaction-amount flex-shrink-0 font-bold w-full sm:w-auto text-right',
+                            transaction.tipo === 'Entrada'
+                              ? 'text-blue-600 dark:text-blue-400'
+                              : 'text-red-600 dark:text-red-400'
+                          )}
+                        >
+                          {transaction.tipo === 'Entrada' ? '+' : '-'}
+                          {formatCurrency(Math.abs(transaction.valor))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </motion.div>
       </div>
-
-      {/* Filters */}
-      <motion.div
-        initial={false}
-        animate={{ 
-          opacity: showFilters ? 1 : 0,
-          height: showFilters ? 'auto' : 0,
-          marginBottom: showFilters ? undefined : 0
-        }}
-        transition={{ duration: 0.3 }}
-        style={{ overflow: 'hidden' }}
-      >
-        {showFilters && (
-          <Card className="dashboard-filters-card">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-lg font-semibold">Filtros</CardTitle>
-                  <CardDescription>
-                    Filtrar transações por período, categoria ou busca
-                  </CardDescription>
-                </div>
-                {hasActiveFilters && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={clearFilters}
-                    className="dashboard-filter-clear-btn"
-                  >
-                    <X className="h-4 w-4 mr-2" />
-                    Limpar
-                  </Button>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold">Data Inicial</label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground dark:text-gray-200 z-10 pointer-events-none" />
-                    <Input
-                      type="date"
-                      value={startDate}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStartDate(e.target.value)}
-                      className="dashboard-filter-input w-full pl-10"
-                      style={{ 
-                        colorScheme: 'light dark'
-                      } as React.CSSProperties}
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold">Data Final</label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground dark:text-gray-200 z-10 pointer-events-none" />
-                    <Input
-                      type="date"
-                      value={endDate}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEndDate(e.target.value)}
-                      className="dashboard-filter-input w-full pl-10"
-                      style={{ 
-                        colorScheme: 'light dark'
-                      } as React.CSSProperties}
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold">Categoria</label>
-                  <Select value={selectedCategory === '__all__' ? undefined : selectedCategory} onValueChange={(value: string) => setSelectedCategory(value || '__all__')}>
-                    <SelectTrigger className="dashboard-filter-input">
-                      <SelectValue placeholder="Todas as categorias" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CATEGORIES.map((cat) => (
-                        <SelectItem key={cat} value={cat}>
-                          {cat}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold">Buscar</label>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground dark:text-gray-300" />
-                    <Input
-                      placeholder="Buscar transações..."
-                      value={searchQuery}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-                      className="dashboard-filter-input pl-9"
-                    />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </motion.div>
-
-      {/* Transactions List */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.4 }}
-      >
-        <Card className="dashboard-transactions-card">
-          <CardHeader>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <CardTitle className="text-lg font-semibold">Transações</CardTitle>
-                <CardDescription>
-                  {loading ? (
-                    'Carregando...'
-                  ) : (
-                    <>
-                      {filteredTransactions.length} transação(ões) encontrada(s)
-                      {selectedIds.size > 0 && (
-                        <span className="ml-2 dashboard-gradient-text font-semibold">
-                          • {selectedIds.size} selecionada(s)
-                        </span>
-                      )}
-                    </>
-                  )}
-                </CardDescription>
-              </div>
-              <div className="flex items-center gap-2">
-                {filteredTransactions.length > 0 && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={selectAll}
-                    className="dashboard-btn-secondary"
-                  >
-                    {selectedIds.size === filteredTransactions.length ? 'Desselecionar' : 'Selecionar Tudo'}
-                  </Button>
-                )}
-                {selectedIds.size > 0 && (
-                  <Button 
-                    variant="destructive" 
-                    size="sm" 
-                    onClick={deleteSelected}
-                    className="dashboard-btn-primary"
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Excluir ({selectedIds.size})
-                  </Button>
-                )}
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="dashboard-loading">
-                <Loader2 className="h-8 w-8 animate-spin text-primary mb-4 dashboard-loading-spinner" />
-                <p className="text-sm text-muted-foreground">Carregando transações...</p>
-              </div>
-            ) : filteredTransactions.length === 0 ? (
-              <div className="dashboard-empty-state">
-                <FileText className="dashboard-empty-icon" />
-                <h3 className="dashboard-empty-title">Nenhuma transação encontrada</h3>
-                <p className="dashboard-empty-description">
-                  {hasActiveFilters
-                    ? 'Tente ajustar os filtros ou adicione uma nova transação.'
-                    : 'Comece adicionando sua primeira transação.'}
-                </p>
-                <Button size="sm" className="dashboard-btn-primary">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Adicionar Transação
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {filteredTransactions.map((transaction, index) => (
-                  <motion.div
-                    key={transaction.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                    className={cn(
-                      'dashboard-transaction-item',
-                      transaction.tipo === 'Entrada' 
-                        ? 'dashboard-transaction-income' 
-                        : 'dashboard-transaction-outcome',
-                      selectedIds.has(transaction.id) && 'dashboard-transaction-item-selected'
-                    )}
-                    onClick={() => toggleSelect(transaction.id)}
-                  >
-                    <div className="flex items-center space-x-4 flex-1 min-w-0">
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.has(transaction.id)}
-                        onChange={() => toggleSelect(transaction.id)}
-                        onClick={(e) => e.stopPropagation()}
-                        className="dashboard-checkbox"
-                      />
-                      <div className={cn(
-                        'dashboard-transaction-icon',
-                        transaction.tipo === 'Entrada'
-                          ? 'bg-blue-100 dark:bg-blue-900/30'
-                          : 'bg-red-100 dark:bg-red-900/30'
-                      )}>
-                        {transaction.tipo === 'Entrada' ? (
-                          <ArrowUpCircle className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                        ) : (
-                          <ArrowDownCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-semibold truncate text-foreground">{transaction.descricao}</div>
-                        <div className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
-                          <span className="dashboard-badge">{transaction.categoria}</span>
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            <span>{formatDate(transaction.data)}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        className={cn(
-                          'dashboard-transaction-amount flex-shrink-0',
-                          transaction.tipo === 'Entrada'
-                            ? 'text-blue-600 dark:text-blue-400'
-                            : 'text-red-600 dark:text-red-400'
-                        )}
-                      >
-                        {transaction.tipo === 'Entrada' ? '+' : '-'}
-                        {formatCurrency(transaction.valor)}
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </motion.div>
     </div>
   )
 }

@@ -1,0 +1,1138 @@
+/* ============================================
+   HERO ENGINEERING - CSS DEDICADO
+   Tema: Engenharia Profissional & Construção
+   ============================================ */
+
+:root {
+  --engineering-primary: #011c3a;
+  --engineering-secondary: #f59e0b;
+  --engineering-accent: #2563eb;
+  --engineering-light: #e0f2fe;
+  --engineering-gradient: linear-gradient(135deg, #011c3a 0%, #0a3d62 50%, #2563eb 100%);
+}
+
+/* ============================================
+   ANIMAÇÕES AVANÇADAS
+   ============================================ */
+
+@keyframes engineering-build-up {
+  0% {
+    opacity: 0;
+    transform: translateY(100px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes engineering-slide-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes engineering-fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes engineering-blueprint-scan {
+  0%, 100% {
+    transform: translateX(-100%);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateX(100%);
+    opacity: 0.8;
+  }
+}
+
+@keyframes engineering-building-rise {
+  0% {
+    clip-path: inset(100% 0 0 0);
+    opacity: 0;
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+@keyframes engineering-pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 30px rgba(245, 158, 11, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+  }
+}
+
+@keyframes engineering-gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes engineering-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes engineering-rotate-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes engineering-line-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes engineering-line-slide {
+  0%, 100% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes engineering-line-slide-vertical {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes engineering-particle-float {
+  0%, 100% {
+    transform: translate(0, 0);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translate(20px, -20px);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(-10px, -40px);
+    opacity: 1;
+  }
+  75% {
+    transform: translate(-20px, -20px);
+    opacity: 0.7;
+  }
+}
+
+@keyframes engineering-shimmer {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  100% {
+    transform: translateX(200%) skewX(-15deg);
+  }
+}
+
+/* ============================================
+   NAVBAR - ENGENHARIA PROFISSIONAL
+   ============================================ */
+
+.engineering-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: rgba(1, 28, 58, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: 2px solid rgba(245, 158, 11, 0.3) !important;
+  box-shadow: 0 4px 30px rgba(1, 28, 58, 0.3) !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.engineering-navbar.scrolled {
+  background: rgba(1, 28, 58, 0.98) !important;
+  box-shadow: 0 8px 40px rgba(1, 28, 58, 0.5) !important;
+  border-bottom: 2px solid rgba(245, 158, 11, 0.5) !important;
+}
+
+.engineering-navbar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.engineering-logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.engineering-logo-wrapper:hover {
+  transform: scale(1.05);
+}
+
+.engineering-logo-wrapper img {
+  height: 3.5rem;
+  width: auto;
+  filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.3));
+  transition: all 0.3s ease;
+}
+
+.engineering-logo-wrapper:hover img {
+  filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.6));
+}
+
+.engineering-logo-text {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: white;
+  letter-spacing: -0.02em;
+}
+
+.engineering-logo-text span {
+  color: #f59e0b;
+}
+
+.engineering-nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0 1rem;
+}
+
+.engineering-nav-link {
+  position: relative;
+  color: white !important;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.5rem 0;
+  transition: all 0.3s ease;
+  letter-spacing: 0.02em;
+}
+
+.engineering-nav-link::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(to right, #f59e0b, #fbbf24);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.engineering-nav-link:hover::before {
+  width: 100%;
+}
+
+.engineering-nav-link:hover {
+  color: #fbbf24 !important;
+}
+
+.engineering-cta-button {
+  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%) !important;
+  color: white !important;
+  padding: 0.625rem 1.5rem !important;
+  border-radius: 0.625rem !important;
+  font-weight: 600 !important;
+  font-size: 0.9375rem !important;
+  border: 1.5px solid transparent !important;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3) !important;
+  transition: all 0.3s ease !important;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.engineering-cta-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.engineering-cta-button:hover::before {
+  left: 100%;
+}
+
+.engineering-cta-button:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.5) !important;
+}
+
+.engineering-cta-button svg {
+  width: 1.125rem !important;
+  height: 1.125rem !important;
+}
+
+/* Botão Secundário - Entrar e Dashboard (Verde) */
+.engineering-cta-button-secondary {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: white !important;
+  padding: 0.625rem 1.5rem !important;
+  border-radius: 0.625rem !important;
+  font-weight: 600 !important;
+  font-size: 0.9375rem !important;
+  border: 1.5px solid transparent !important;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4) !important;
+  transition: all 0.3s ease !important;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.engineering-cta-button-secondary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.engineering-cta-button-secondary:hover::before {
+  left: 100%;
+}
+
+.engineering-cta-button-secondary:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6) !important;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+}
+
+.engineering-cta-button-secondary svg {
+  width: 1.125rem !important;
+  height: 1.125rem !important;
+}
+
+/* Botão Entrar Mobile - Mesma cor do Desktop */
+.mobile-entrar-button {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4) !important;
+  transition: all 0.3s ease !important;
+}
+
+.mobile-entrar-button:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Botão Sair */
+.engineering-cta-button-logout {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: white !important;
+  padding: 0.625rem 1.5rem !important;
+  border-radius: 0.625rem !important;
+  font-weight: 600 !important;
+  font-size: 0.9375rem !important;
+  border: 1.5px solid rgba(239, 68, 68, 0.3) !important;
+  backdrop-filter: blur(10px) !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.engineering-cta-button-logout:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.5) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.2) !important;
+}
+
+.engineering-cta-button-logout svg {
+  width: 1.125rem !important;
+  height: 1.125rem !important;
+}
+
+/* ============================================
+   HERO - ENGENHARIA PROFISSIONAL
+   ============================================ */
+
+.engineering-hero-section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: linear-gradient(135deg, #011c3a 0%, #0a2540 50%, #011c3a 100%);
+  padding-top: 5rem;
+}
+
+/* Subtle Grid Pattern */
+.engineering-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.08;
+  background-image: 
+    linear-gradient(rgba(245, 158, 11, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 158, 11, 0.1) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Animated Grid */
+.engineering-blueprint-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.engineering-blueprint-grid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    transparent 0%,
+    rgba(1, 28, 58, 0.8) 100%
+  );
+}
+
+/* Gradient Overlay - Subtle */
+.engineering-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Removed left glow - keeping only subtle right glow */
+.engineering-gradient-overlay::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(
+    circle at center,
+    rgba(37, 99, 235, 0.04) 0%,
+    transparent 70%
+  );
+  animation: engineering-pulse-glow 8s ease-in-out infinite;
+}
+
+/* Animated Lines */
+.engineering-buildings {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.engineering-building {
+  position: absolute;
+  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.3), transparent);
+  height: 1px;
+  width: 100%;
+  opacity: 0;
+  animation: engineering-line-slide 3s ease-in-out infinite;
+}
+
+.engineering-building-1 {
+  top: 20%;
+  animation-delay: 0s;
+}
+
+.engineering-building-2 {
+  top: 40%;
+  animation-delay: 1s;
+}
+
+.engineering-building-3 {
+  top: 60%;
+  animation-delay: 2s;
+}
+
+.engineering-building-4 {
+  top: 80%;
+  animation-delay: 1.5s;
+}
+
+/* Vertical Lines */
+.engineering-building-5,
+.engineering-building-6 {
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, rgba(245, 158, 11, 0.2), transparent);
+}
+
+.engineering-building-5 {
+  left: 20%;
+  top: 0;
+  animation: engineering-line-slide-vertical 4s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+.engineering-building-6 {
+  right: 20%;
+  top: 0;
+  animation: engineering-line-slide-vertical 4s ease-in-out infinite;
+  animation-delay: 2.5s;
+}
+
+/* Floating Orbs - Subtle and Professional */
+.engineering-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.engineering-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.6) 0%, rgba(245, 158, 11, 0) 70%);
+  border-radius: 50%;
+  animation: engineering-particle-float 6s ease-in-out infinite;
+}
+
+.engineering-particle::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 3px;
+  height: 3px;
+  background: #fbbf24;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+}
+
+.engineering-particle:nth-child(1) {
+  top: 15%;
+  left: 15%;
+  animation-delay: 0s;
+}
+
+.engineering-particle:nth-child(2) {
+  top: 25%;
+  right: 20%;
+  animation-delay: 1.2s;
+  animation-duration: 7s;
+}
+
+.engineering-particle:nth-child(3) {
+  bottom: 20%;
+  left: 25%;
+  animation-delay: 2.4s;
+  animation-duration: 8s;
+}
+
+.engineering-particle:nth-child(4) {
+  top: 50%;
+  right: 15%;
+  animation-delay: 3.6s;
+  animation-duration: 6.5s;
+}
+
+.engineering-particle:nth-child(5) {
+  bottom: 30%;
+  right: 30%;
+  animation-delay: 4.8s;
+  animation-duration: 7.5s;
+}
+
+/* Hero Content */
+.engineering-hero-content {
+  position: relative;
+  z-index: 10;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.engineering-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  background: rgba(245, 158, 11, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(245, 158, 11, 0.3);
+  border-radius: 9999px;
+  color: #fbbf24;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 2rem;
+  opacity: 1;
+  animation: engineering-fade-in 0.8s ease-out;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.15);
+  text-transform: uppercase;
+}
+
+.engineering-hero-badge svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.engineering-hero-title {
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 2rem;
+  opacity: 1;
+  animation: engineering-fade-in 1.2s ease-out;
+}
+
+.engineering-hero-title-main {
+  display: block;
+  color: white;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.02em;
+}
+
+.engineering-hero-title-highlight {
+  display: block;
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: engineering-gradient-shift 5s ease infinite;
+  position: relative;
+  letter-spacing: -0.01em;
+  padding-bottom: 1.5rem;
+}
+
+.engineering-hero-title-highlight::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  max-width: 200px;
+  height: 3px;
+  background: linear-gradient(to right, transparent, #f59e0b, transparent);
+  border-radius: 2px;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+  animation: engineering-line-expand 1.5s ease-out 0.5s forwards;
+}
+
+@keyframes engineering-line-expand {
+  to {
+    width: 80%;
+  }
+}
+
+.engineering-hero-subtitle {
+  font-size: 1.25rem;
+  line-height: 1.7;
+  color: #cbd5e1;
+  max-width: 800px;
+  margin: 0 auto 3rem;
+  opacity: 1;
+  animation: engineering-fade-in 1.4s ease-out;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  font-weight: 400;
+}
+
+.engineering-hero-subtitle strong {
+  color: #fbbf24;
+  font-weight: 700;
+}
+
+/* Hero CTAs */
+.engineering-hero-ctas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 4rem;
+  opacity: 1;
+  animation: engineering-fade-in 1.6s ease-out;
+}
+
+.engineering-hero-cta-primary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 2.5rem !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%) !important;
+  color: white !important;
+  font-size: 1.125rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em !important;
+  border: none !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 
+    0 4px 15px rgba(16, 185, 129, 0.4),
+    0 2px 8px rgba(16, 185, 129, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.engineering-hero-cta-primary:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 
+    0 8px 25px rgba(16, 185, 129, 0.5),
+    0 4px 12px rgba(16, 185, 129, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  background: linear-gradient(135deg, #059669 0%, #047857 50%, #065f46 100%) !important;
+}
+
+.engineering-hero-cta-primary:active {
+  transform: translateY(0) !important;
+  box-shadow: 
+    0 2px 8px rgba(16, 185, 129, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+.engineering-hero-cta-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    transparent 30%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 70%,
+    transparent 100%
+  );
+  transform: translateX(-100%) skewX(-12deg);
+  transition: transform 0.6s ease;
+}
+
+.engineering-hero-cta-primary:hover::before {
+  transform: translateX(200%) skewX(-12deg);
+}
+
+.engineering-hero-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.125rem 2.5rem !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: white !important;
+  font-size: 1.125rem !important;
+  font-weight: 700 !important;
+  border: 2px solid rgba(245, 158, 11, 0.4) !important;
+  border-radius: 0.75rem !important;
+  backdrop-filter: blur(10px) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  cursor: pointer;
+}
+
+.engineering-hero-cta-secondary:hover {
+  background: rgba(245, 158, 11, 0.1) !important;
+  border-color: #f59e0b !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.2) !important;
+}
+
+/* Stats Cards - Engineering Style */
+.engineering-stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  opacity: 1;
+  animation: engineering-fade-in 1.8s ease-out;
+}
+
+.engineering-stat-card {
+  position: relative;
+  padding: 1.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(245, 158, 11, 0.2);
+  border-radius: 1rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.engineering-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(245, 158, 11, 0.08),
+    transparent
+  );
+  transition: left 0.6s ease;
+}
+
+.engineering-stat-card:hover::before {
+  left: 100%;
+}
+
+.engineering-stat-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(245, 158, 11, 0.5);
+  transform: translateY(-6px);
+  box-shadow: 0 15px 35px rgba(245, 158, 11, 0.25);
+}
+
+.engineering-stat-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  margin: 0 auto 1rem;
+  padding: 0.625rem;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(234, 88, 12, 0.2) 100%);
+  border: 1.5px solid rgba(245, 158, 11, 0.3);
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.engineering-stat-card:hover .engineering-stat-icon {
+  transform: scale(1.1) rotate(5deg);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.3) 0%, rgba(234, 88, 12, 0.3) 100%);
+  border-color: rgba(245, 158, 11, 0.6);
+  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+}
+
+.engineering-stat-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #fbbf24;
+}
+
+.engineering-stat-value {
+  font-size: 2.25rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+  display: block;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.engineering-stat-label {
+  color: #94a3b8;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ============================================
+   RESPONSIVIDADE
+   ============================================ */
+
+@media (max-width: 1200px) {
+  .engineering-hero-title {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .engineering-navbar-container {
+    padding: 1rem;
+  }
+  
+  .engineering-nav-menu {
+    gap: 1.5rem;
+  }
+  
+  .engineering-nav-link {
+    font-size: 0.875rem;
+  }
+  
+  .engineering-hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .engineering-hero-subtitle {
+    font-size: 1.125rem;
+  }
+  
+  .engineering-hero-cta-primary,
+  .engineering-hero-cta-secondary {
+    padding: 1rem 2rem !important;
+    font-size: 1rem !important;
+  }
+  
+  .engineering-stat-value {
+    font-size: 2rem;
+  }
+  
+  .engineering-stats-container {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .engineering-hero-title {
+    font-size: 2rem;
+  }
+  
+  .engineering-hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .engineering-hero-ctas {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .engineering-hero-cta-primary,
+  .engineering-hero-cta-secondary {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .engineering-stat-value {
+    font-size: 1.75rem;
+  }
+  
+  .engineering-stats-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ============================================
+   ACESSIBILIDADE
+   ============================================ */
+
+/* ============================================
+   MOBILE OPTIMIZATIONS
+   ============================================ */
+
+@media (max-width: 768px) {
+  /* NavBar Mobile */
+  .engineering-navbar {
+    padding: 0.75rem 1rem !important;
+    height: auto !important;
+    min-height: 4rem !important;
+  }
+
+  .engineering-navbar-container {
+    gap: 1rem !important;
+  }
+
+  .engineering-logo-wrapper img {
+    height: 2rem !important;
+  }
+
+  /* Hero Section Mobile */
+  .engineering-hero-section {
+    min-height: 100vh !important;
+    padding: 0 1rem !important;
+    padding-top: 8rem !important;
+    padding-bottom: 3rem !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    position: relative !important;
+    z-index: 1 !important;
+    margin-top: 0 !important;
+  }
+
+  .engineering-hero-content {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin-top: 0 !important;
+    width: 100% !important;
+    position: relative !important;
+    z-index: 2 !important;
+  }
+
+  .engineering-hero-title {
+    font-size: 2rem !important;
+    line-height: 1.2 !important;
+    margin-bottom: 1rem !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  .engineering-hero-title-main {
+    font-size: 1.75rem !important;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .engineering-hero-title-highlight {
+    font-size: 2rem !important;
+    display: block;
+  }
+
+  .engineering-hero-subtitle {
+    font-size: 0.9375rem !important;
+    line-height: 1.6 !important;
+    margin-bottom: 2rem !important;
+    padding: 0 0.5rem;
+  }
+
+  /* Hero CTAs Mobile */
+  .engineering-hero-ctas {
+    gap: 1rem !important;
+    margin-bottom: 2.5rem !important;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .engineering-hero-cta-primary {
+    width: 100% !important;
+    padding: 0.875rem 1.75rem !important;
+    font-size: 0.9375rem !important;
+  }
+
+  .engineering-hero-cta-primary svg {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+  }
+
+  /* Stats Cards Mobile */
+  .engineering-stats-container {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+    margin-top: 2rem !important;
+  }
+
+  .engineering-stat-card {
+    padding: 1.25rem 1rem !important;
+  }
+
+  .engineering-stat-icon {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .engineering-stat-icon svg {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+  }
+
+  .engineering-stat-value {
+    font-size: 1.5rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .engineering-stat-label {
+    font-size: 0.75rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .engineering-hero-title {
+    font-size: 1.75rem !important;
+  }
+
+  .engineering-hero-title-main {
+    font-size: 1.5rem !important;
+  }
+
+  .engineering-hero-title-highlight {
+    font-size: 1.75rem !important;
+  }
+
+  .engineering-hero-subtitle {
+    font-size: 0.875rem !important;
+  }
+
+  .engineering-stats-container {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+}
+
+/* Mobile Menu Navigation Items - Colored Icons */
+.mobile-nav-item-group[data-item-color="#2563eb"]:hover .mobile-nav-arrow {
+  color: #3b82f6 !important;
+}
+
+.mobile-nav-item-group[data-item-color="#f59e0b"]:hover .mobile-nav-arrow {
+  color: #fbbf24 !important;
+}
+
+.mobile-nav-item-group[data-item-color="#10b981"]:hover .mobile-nav-arrow {
+  color: #34d399 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+

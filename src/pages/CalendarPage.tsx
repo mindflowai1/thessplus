@@ -14,10 +14,14 @@ import {
   ExternalLink,
   CalendarDays,
   AlertCircle,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react'
 import { listReminders } from '@/services/googleCalendar'
 import { cn } from '@/lib/utils'
 import { CreateEventDialog } from '@/components/CreateEventDialog'
+import { motion } from 'framer-motion'
+import './DashboardEngineering.css'
 
 interface CalendarEvent {
   id: string
@@ -47,6 +51,7 @@ export function CalendarPage() {
   const [error, setError] = useState<string | null>(null)
   const [needsGoogleAuth, setNeedsGoogleAuth] = useState(false)
   const [createEventOpen, setCreateEventOpen] = useState(false)
+  const [pastEventsExpanded, setPastEventsExpanded] = useState(false)
 
   const fetchEvents = async () => {
     if (!user) return
@@ -56,11 +61,10 @@ export function CalendarPage() {
     setNeedsGoogleAuth(false)
     try {
       const startDate = new Date()
-      startDate.setMonth(startDate.getMonth() - 1) // Último mês
+      startDate.setMonth(startDate.getMonth() - 1)
       const endDate = new Date()
-      endDate.setMonth(endDate.getMonth() + 2) // Próximos 2 meses
+      endDate.setMonth(endDate.getMonth() + 2)
 
-      // Format dates as YYYY-MM-DD for the API
       const startDateStr = startDate.toISOString().split('T')[0]
       const endDateStr = endDate.toISOString().split('T')[0]
 
@@ -71,7 +75,6 @@ export function CalendarPage() {
     } catch (err: any) {
       console.error('Error fetching calendar events:', err)
       
-      // Check if it's a token error
       if (err.message?.includes('Google token not found')) {
         setNeedsGoogleAuth(true)
         setError('Você precisa conectar sua conta do Google Calendar para visualizar eventos.')
@@ -102,9 +105,7 @@ export function CalendarPage() {
     const dateTime = event.start.dateTime || event.start.date
     if (!dateTime) return null
     
-    // Parse the date correctly
     const date = new Date(dateTime)
-    // Validate the date
     if (isNaN(date.getTime())) {
       console.error('Invalid date:', dateTime)
       return null
@@ -117,9 +118,7 @@ export function CalendarPage() {
     const dateTime = event.end.dateTime || event.end.date
     if (!dateTime) return null
     
-    // Parse the date correctly
     const date = new Date(dateTime)
-    // Validate the date
     if (isNaN(date.getTime())) {
       console.error('Invalid end date:', dateTime)
       return null
@@ -136,7 +135,6 @@ export function CalendarPage() {
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
     const eventDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
 
-    // Check if it's an all-day event
     const isAllDay = !event.start.dateTime && event.start.date
 
     if (eventDate.getTime() === today.getTime()) {
@@ -199,22 +197,17 @@ export function CalendarPage() {
 
     const now = new Date()
     
-    // For all-day events, compare only the date
     if (!event.start.dateTime && event.start.date) {
       const eventDateOnly = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate())
       const todayOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-      // All-day events are upcoming if they are today or in the future
       return eventDateOnly.getTime() >= todayOnly.getTime()
     }
 
-    // For timed events, compare with end time (if event hasn't ended yet, it's upcoming)
     const endDate = getEventEndDate(event)
     if (endDate) {
-      // Event is upcoming if it hasn't ended yet
       return endDate.getTime() >= now.getTime()
     }
 
-    // Fallback: compare with start time
     return eventDate.getTime() >= now.getTime()
   }
 
@@ -243,6 +236,35 @@ export function CalendarPage() {
   const upcomingEvents = getUpcomingEvents()
   const pastEvents = getPastEvents()
 
+  const getEventsToday = () => {
+    const now = new Date()
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    
+    return upcomingEvents.filter(event => {
+      const eventDate = getEventDate(event)
+      if (!eventDate) return false
+      const eventDateOnly = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate())
+      return eventDateOnly.getTime() === today.getTime()
+    })
+  }
+
+  const getFutureEvents = () => {
+    const eventsToday = getEventsToday()
+    const todayIds = new Set(eventsToday.map(e => e.id))
+    return upcomingEvents.filter(event => !todayIds.has(event.id))
+  }
+
+  const getNextEvent = () => {
+    const eventsToday = getEventsToday()
+    if (eventsToday.length > 0) return eventsToday[0]
+    const futureEvents = getFutureEvents()
+    if (futureEvents.length === 0) return null
+    return futureEvents[0]
+  }
+
+  const eventsToday = getEventsToday()
+  const futureEvents = getFutureEvents()
+
   const getDaysUntilEvent = (event: CalendarEvent): number | null => {
     const eventDate = getEventDate(event)
     if (!eventDate) return null
@@ -257,17 +279,49 @@ export function CalendarPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Agenda</h1>
-          <p className="text-muted-foreground mt-1">
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto dashboard-animate-fade-in">
+        {/* Page Title */}
+        <motion.div 
+          className="mb-8"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, type: "spring" }}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <Calendar className={cn(
+              "h-7 w-7",
+              "text-amber-500 dark:text-amber-400"
+            )} strokeWidth={2.5} />
+            <h1 className={cn(
+              "text-3xl lg:text-4xl font-bold tracking-tight",
+              "text-foreground"
+            )}>
+              Agenda
+            </h1>
+          </div>
+          <p className={cn(
+            "text-base lg:text-lg text-muted-foreground ml-10",
+            "font-medium"
+          )}>
             Seus eventos e compromissos do Google Calendar
           </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={fetchEvents} disabled={loading}>
+        </motion.div>
+
+        {/* Action Buttons */}
+        <motion.div 
+          className="flex items-center gap-3 mb-6"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={fetchEvents}
+            disabled={loading}
+            className="dashboard-btn-secondary"
+          >
             {loading ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
             ) : (
@@ -278,355 +332,565 @@ export function CalendarPage() {
           <Button 
             size="sm"
             onClick={() => setCreateEventOpen(true)}
-            className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800"
+            className="dashboard-btn-primary"
           >
             <Plus className="h-4 w-4 mr-2" />
             Novo Evento
           </Button>
-        </div>
-      </div>
+        </motion.div>
 
-      {/* Stats Cards */}
-      {!loading && events.length > 0 && (
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Próximos Eventos</CardTitle>
-              <CalendarDays className="h-4 w-4 text-muted-foreground dark:text-gray-300" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{upcomingEvents.length}</div>
-              <p className="text-xs text-muted-foreground mt-1">Eventos agendados</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Eventos Passados</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground dark:text-gray-300" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{pastEvents.length}</div>
-              <p className="text-xs text-muted-foreground mt-1">Eventos concluídos</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total de Eventos</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground dark:text-gray-300" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{events.length}</div>
-              <p className="text-xs text-muted-foreground mt-1">Neste período</p>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* Error Message / Google Auth Required */}
-      {error && (
-        <Card className={cn(
-          "border-2",
-          needsGoogleAuth 
-            ? "border-blue-200 dark:border-blue-900 bg-blue-50/50 dark:bg-blue-950/20"
-            : "border-red-200 dark:border-red-900 bg-red-50/50 dark:bg-red-950/20"
-        )}>
-          <CardContent className="pt-6">
-            <div className="flex items-start gap-3">
-              <AlertCircle className={cn(
-                "h-5 w-5 mt-0.5 flex-shrink-0",
-                needsGoogleAuth 
-                  ? "text-blue-600 dark:text-blue-400"
-                  : "text-red-600 dark:text-red-400"
-              )} />
-              <div className="flex-1">
-                <p className={cn(
-                  "text-sm font-medium mb-1",
-                  needsGoogleAuth
-                    ? "text-blue-900 dark:text-blue-200"
-                    : "text-red-900 dark:text-red-200"
-                )}>
-                  {needsGoogleAuth ? 'Conecte sua conta do Google' : 'Erro ao carregar eventos'}
-                </p>
-                <p className={cn(
-                  "text-sm mb-3",
-                  needsGoogleAuth
-                    ? "text-blue-700 dark:text-blue-300"
-                    : "text-red-700 dark:text-red-300"
-                )}>{error}</p>
-                {needsGoogleAuth && (
-                  <Button 
-                    onClick={handleConnectGoogle}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
-                    size="sm"
-                  >
-                    <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-                      <path
-                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                        fill="currentColor"
-                      />
-                      <path
-                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                        fill="currentColor"
-                      />
-                      <path
-                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                        fill="currentColor"
-                      />
-                      <path
-                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                    Conectar com Google Calendar
-                  </Button>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Loading State */}
-      {loading && events.length === 0 && (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-            <p className="text-sm text-muted-foreground">Carregando eventos do Google Calendar...</p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Empty State */}
-      {!loading && !error && events.length === 0 && (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <Calendar className="h-12 w-12 text-muted-foreground dark:text-gray-300 mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Nenhum evento encontrado</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Você ainda não tem eventos no Google Calendar para este período.
-            </p>
-            <Button 
-              size="sm"
-              onClick={() => setCreateEventOpen(true)}
-              className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800"
+        {/* Stats Cards */}
+        {!loading && events.length > 0 && (
+          <div className="grid gap-6 md:grid-cols-3 mb-6">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
             >
-              <Plus className="h-4 w-4 mr-2" />
-              Criar Primeiro Evento
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+              <Card className="dashboard-summary-card dashboard-summary-card-income">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                  <CardTitle className="text-foreground">Eventos Hoje</CardTitle>
+                  <div className="dashboard-summary-icon bg-blue-500/20 border border-blue-500/30">
+                    <CalendarDays className="h-6 w-6 text-blue-600 dark:text-blue-400" strokeWidth={2.5} />
+                  </div>
+                </CardHeader>
+                <CardContent className="flex flex-col flex-1">
+                  <div className="dashboard-summary-value text-blue-600 dark:text-blue-400">
+                    {getEventsToday().length}
+                  </div>
+                  <p className="dashboard-summary-label">
+                    <span className="dashboard-badge bg-blue-500/15 border-blue-500/30 text-blue-700 dark:bg-blue-500/15 dark:border-blue-500/30 dark:text-blue-300">
+                      {getEventsToday().length === 1 ? 'Evento hoje' : 'Eventos hoje'}
+                    </span>
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-      {/* Upcoming Events */}
-      {upcomingEvents.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-4 sm:mb-6">
-            <h2 className="text-xl sm:text-2xl font-semibold">Próximos Eventos</h2>
-            <span className="text-xs sm:text-sm text-muted-foreground">{upcomingEvents.length} evento(s)</span>
-          </div>
-          <div className="space-y-3 sm:space-y-4">
-            {upcomingEvents.map((event) => {
-              const daysUntil = getDaysUntilEvent(event)
-              const endTime = formatEventEndTime(event)
-              const duration = getEventDuration(event)
-              const isToday = daysUntil === 0
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+            >
+              <Card className="dashboard-summary-card dashboard-summary-card-balance">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                  <CardTitle className="text-foreground">Eventos Concluídos</CardTitle>
+                  <div className="dashboard-summary-icon bg-green-500/20 border border-green-500/30">
+                    <Clock className="h-6 w-6 text-green-600 dark:text-green-400" strokeWidth={2.5} />
+                  </div>
+                </CardHeader>
+                <CardContent className="flex flex-col flex-1">
+                  <div className="dashboard-summary-value text-green-600 dark:text-green-400">
+                    {pastEvents.length}
+                  </div>
+                  <p className="dashboard-summary-label">
+                    <span className="dashboard-badge bg-green-500/15 border-green-500/30 text-green-700 dark:bg-green-500/15 dark:border-green-500/30 dark:text-green-300">
+                      Eventos concluídos
+                    </span>
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-              return (
-                <Card
-                  key={event.id}
-                  className={cn(
-                    'hover:shadow-lg transition-all cursor-pointer border-l-4',
-                    isToday
-                      ? 'border-l-blue-500 bg-blue-50/50 dark:bg-blue-950/20'
-                      : 'border-l-blue-500 hover:border-l-blue-600'
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.3 }}
+            >
+              <Card className="dashboard-summary-card dashboard-summary-card-balance">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                  <CardTitle className="text-foreground">Próximo Evento</CardTitle>
+                  <div className="dashboard-summary-icon bg-amber-500/20 border border-amber-500/30">
+                    <Clock className="h-6 w-6 text-amber-600 dark:text-amber-400" strokeWidth={2.5} />
+                  </div>
+                </CardHeader>
+                <CardContent className="flex flex-col flex-1">
+                  {getNextEvent() ? (
+                    <>
+                      <div className="dashboard-summary-value text-amber-600 dark:text-amber-400 text-lg lg:text-xl mb-2 line-clamp-1">
+                        {formatEventDate(getNextEvent()!)}
+                      </div>
+                      <p className="dashboard-summary-label">
+                        <span className="dashboard-badge bg-amber-500/15 border-amber-500/30 text-amber-700 dark:bg-amber-500/15 dark:border-amber-500/30 dark:text-amber-300 inline-block">
+                          {getNextEvent()!.summary}
+                        </span>
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="dashboard-summary-value text-amber-600 dark:text-amber-400">
+                        —
+                      </div>
+                      <p className="dashboard-summary-label">
+                        <span className="dashboard-badge bg-amber-500/15 border-amber-500/30 text-amber-700 dark:bg-amber-500/15 dark:border-amber-500/30 dark:text-amber-300">
+                          Nenhum evento agendado
+                        </span>
+                      </p>
+                    </>
                   )}
-                >
-                  <CardHeader className="p-4 sm:p-6">
-                    <div className="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-4">
-                      <div className="flex-1 min-w-0 w-full sm:w-auto">
-                        <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
-                          <div
-                            className={cn(
-                              'h-10 w-10 sm:h-12 sm:w-12 rounded-lg flex items-center justify-center flex-shrink-0',
-                              isToday
-                                ? 'bg-blue-100 dark:bg-blue-900/30'
-                                : 'bg-blue-100 dark:bg-blue-900/30'
-                            )}
-                          >
-                            <Calendar
-                              className={cn(
-                                'h-5 w-5 sm:h-6 sm:w-6',
-                                isToday ? 'text-blue-600 dark:text-blue-400' : 'text-blue-600 dark:text-blue-400'
-                              )}
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <CardTitle className="text-base sm:text-lg mb-2 sm:mb-1 truncate">{event.summary}</CardTitle>
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 flex-wrap text-xs sm:text-sm text-muted-foreground">
-                              <div className="flex items-center gap-2">
-                                <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground dark:text-gray-300 flex-shrink-0" />
-                                <span className="font-medium text-sm sm:text-base">{formatEventDate(event)}</span>
-                                {endTime && (
-                                  <>
-                                    <span className="hidden sm:inline">—</span>
-                                    <span className="sm:hidden block">às</span>
-                                    <span className="text-sm sm:text-base">{endTime}</span>
-                                  </>
-                                )}
-                                {duration && (
-                                  <>
-                                    <span className="mx-1 hidden sm:inline">•</span>
-                                    <span className="text-xs sm:text-sm">{duration}</span>
-                                  </>
-                                )}
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Error Message / Google Auth Required */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card className={cn(
+              "dashboard-card border-2",
+              needsGoogleAuth 
+                ? "border-blue-500/30 bg-blue-500/10"
+                : "border-red-500/30 bg-red-500/10"
+            )}>
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className={cn(
+                    "h-5 w-5 mt-0.5 flex-shrink-0",
+                    needsGoogleAuth 
+                      ? "text-blue-400"
+                      : "text-red-400"
+                  )} />
+                  <div className="flex-1">
+                    <p className={cn(
+                      "text-sm font-medium mb-1",
+                      needsGoogleAuth
+                        ? "text-blue-300"
+                        : "text-red-300"
+                    )}>
+                      {needsGoogleAuth ? 'Conecte sua conta do Google' : 'Erro ao carregar eventos'}
+                    </p>
+                    <p className={cn(
+                      "text-sm mb-3",
+                      needsGoogleAuth
+                        ? "text-blue-300/80"
+                        : "text-red-300/80"
+                    )}>{error}</p>
+                    {needsGoogleAuth && (
+                      <Button 
+                        onClick={handleConnectGoogle}
+                        className="dashboard-btn-primary"
+                        size="sm"
+                      >
+                        <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+                          <path
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                            fill="currentColor"
+                          />
+                          <path
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                            fill="currentColor"
+                          />
+                          <path
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                            fill="currentColor"
+                          />
+                          <path
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                        Conectar com Google Calendar
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Loading State */}
+        {loading && events.length === 0 && (
+          <Card className="dashboard-card">
+            <CardContent className="dashboard-loading">
+              <Loader2 className="dashboard-loading-spinner h-8 w-8 animate-spin mb-4" />
+              <p className="text-sm text-muted-foreground">Carregando eventos do Google Calendar...</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Empty State */}
+        {!loading && !error && events.length === 0 && (
+          <Card className="dashboard-card">
+            <CardContent className="dashboard-empty-state">
+              <Calendar className="dashboard-empty-icon h-12 w-12 mb-4" />
+              <h3 className="dashboard-empty-title">Nenhum evento encontrado</h3>
+              <p className="dashboard-empty-description mb-4">
+                Você ainda não tem eventos no Google Calendar para este período.
+              </p>
+              <Button 
+                size="sm"
+                onClick={() => setCreateEventOpen(true)}
+                className="dashboard-btn-primary"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Criar Primeiro Evento
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Events Today - Priority Section */}
+        {eventsToday.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="mb-8"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="dashboard-section-title flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                Eventos Hoje
+              </h2>
+              <span className="text-sm text-muted-foreground">{eventsToday.length} evento(s)</span>
+            </div>
+            <div className="space-y-4">
+              {eventsToday.map((event, index) => {
+                const endTime = formatEventEndTime(event)
+                const duration = getEventDuration(event)
+                const isToday = true
+
+                return (
+                  <motion.div
+                    key={event.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                  >
+                    <Card className={cn(
+                      "dashboard-transactions-card dashboard-transaction-item cursor-pointer",
+                      isToday && "border-l-4 border-l-amber-500"
+                    )}>
+                      <CardHeader className="p-6">
+                        <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0 w-full">
+                            <div className="flex items-start gap-4 mb-4">
+                              <div className={cn(
+                                "dashboard-transaction-icon flex-shrink-0",
+                                isToday ? "bg-amber-500/20 border-amber-500/30" : "bg-blue-500/20 border-blue-500/30"
+                              )}>
+                                <Calendar className={cn(
+                                  "h-6 w-6",
+                                  isToday ? "text-amber-400" : "text-blue-400"
+                                )} strokeWidth={2.5} />
                               </div>
-                              {(daysUntil !== null && daysUntil > 0) || isToday ? (
-                                <div className="flex gap-2 flex-wrap">
-                                  {daysUntil !== null && daysUntil > 0 && (
-                                    <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2.5 py-1 rounded-full">
-                                      {daysUntil === 1 ? 'Amanhã' : `Em ${daysUntil} dias`}
-                                    </span>
-                                  )}
-                                  {isToday && (
-                                    <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2.5 py-1 rounded-full font-medium">
+                              <div className="flex-1 min-w-0">
+                                <CardTitle className="text-lg mb-2 truncate">{event.summary}</CardTitle>
+                                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-3">
+                                  <div className="flex items-center gap-2">
+                                    <Clock className="h-4 w-4" />
+                                    <span className="font-medium">{formatEventDate(event)}</span>
+                                    {endTime && (
+                                      <>
+                                        <span>—</span>
+                                        <span>{endTime}</span>
+                                      </>
+                                    )}
+                                    {duration && (
+                                      <>
+                                        <span className="mx-1">•</span>
+                                        <span>{duration}</span>
+                                      </>
+                                    )}
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <span className="dashboard-badge bg-amber-500/15 border-amber-500/30 text-amber-300 font-medium">
                                       Hoje
                                     </span>
+                                  </div>
+                                </div>
+
+                                {(event.location || (event.attendees && event.attendees.length > 0)) && (
+                                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                                    {event.location && (
+                                      <div className="flex items-center gap-2">
+                                        <MapPin className="h-4 w-4" />
+                                        <span className="truncate max-w-xs">{event.location}</span>
+                                      </div>
+                                    )}
+                                    {event.attendees && event.attendees.length > 0 && (
+                                      <div className="flex items-center gap-2">
+                                        <Users className="h-4 w-4" />
+                                        <span>
+                                          {event.attendees.length} participante{event.attendees.length > 1 ? 's' : ''}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+
+                                {event.description && 
+                                 !event.description.includes('Para acessar informações detalhadas sobre eventos criados automaticamente') &&
+                                 !event.description.includes('Este evento foi criado com base em um e-mail') &&
+                                 !event.description.includes('g.co/calendar') &&
+                                 !event.description.includes('mail.google.com') && (
+                                  <p className="text-sm text-muted-foreground mt-3 line-clamp-2">{event.description}</p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          {event.htmlLink && (
+                            <Button variant="outline" size="sm" asChild className="dashboard-btn-secondary flex-shrink-0">
+                              <a href={event.htmlLink} target="_blank" rel="noopener noreferrer">
+                                <ExternalLink className="h-4 w-4 mr-2" />
+                                Abrir
+                              </a>
+                            </Button>
+                          )}
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  </motion.div>
+                )
+              })}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Future Events (excluding today) */}
+        {futureEvents.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="mt-8"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="dashboard-section-title">Próximos Eventos</h2>
+              <span className="text-sm text-muted-foreground">{futureEvents.length} evento(s)</span>
+            </div>
+            <div className="space-y-4">
+              {futureEvents.map((event, index) => {
+                const daysUntil = getDaysUntilEvent(event)
+                const endTime = formatEventEndTime(event)
+                const duration = getEventDuration(event)
+
+                return (
+                  <motion.div
+                    key={event.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                  >
+                    <Card className="dashboard-transactions-card dashboard-transaction-item cursor-pointer">
+                      <CardHeader className="p-6">
+                        <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0 w-full">
+                            <div className="flex items-start gap-4 mb-4">
+                              <div className="dashboard-transaction-icon bg-blue-500/20 border-blue-500/30 flex-shrink-0">
+                                <Calendar className="h-6 w-6 text-blue-400" strokeWidth={2.5} />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <CardTitle className="text-lg mb-2 truncate">{event.summary}</CardTitle>
+                                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-3">
+                                  <div className="flex items-center gap-2">
+                                    <Clock className="h-4 w-4" />
+                                    <span className="font-medium">{formatEventDate(event)}</span>
+                                    {endTime && (
+                                      <>
+                                        <span>—</span>
+                                        <span>{endTime}</span>
+                                      </>
+                                    )}
+                                    {duration && (
+                                      <>
+                                        <span className="mx-1">•</span>
+                                        <span>{duration}</span>
+                                      </>
+                                    )}
+                                  </div>
+                                  {daysUntil !== null && daysUntil > 0 && (
+                                    <div className="flex gap-2">
+                                      <span className="dashboard-badge bg-blue-500/15 border-blue-500/30 text-blue-300">
+                                        {daysUntil === 1 ? 'Amanhã' : `Em ${daysUntil} dias`}
+                                      </span>
+                                    </div>
                                   )}
                                 </div>
-                              ) : null}
-                            </div>
-                          </div>
-                        </div>
 
-                        {(event.location || (event.attendees && event.attendees.length > 0)) && (
-                          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4 mt-3 sm:mt-4 text-xs sm:text-sm text-muted-foreground">
-                            {event.location && (
-                              <div className="flex items-center gap-2">
-                                <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground dark:text-gray-300 flex-shrink-0" />
-                                <span className="truncate max-w-[200px] sm:max-w-xs">{event.location}</span>
-                              </div>
-                            )}
-                            {event.attendees && event.attendees.length > 0 && (
-                              <div className="flex items-center gap-2">
-                                <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground dark:text-gray-300 flex-shrink-0" />
-                                <span>
-                                  {event.attendees.length} participante{event.attendees.length > 1 ? 's' : ''}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        {event.description && (
-                          <p className="text-xs sm:text-sm text-muted-foreground mt-3 sm:mt-4 line-clamp-2 leading-relaxed">{event.description}</p>
-                        )}
-                      </div>
-
-                      {event.htmlLink && (
-                        <Button variant="outline" size="sm" asChild className="flex-shrink-0 w-full sm:w-auto mt-3 sm:mt-0">
-                          <a href={event.htmlLink} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2" />
-                            Abrir
-                          </a>
-                        </Button>
-                      )}
-                    </div>
-                  </CardHeader>
-                </Card>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Past Events */}
-      {pastEvents.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-4 sm:mb-6">
-            <h2 className="text-xl sm:text-2xl font-semibold">Eventos Passados</h2>
-            <span className="text-xs sm:text-sm text-muted-foreground">{pastEvents.length} evento(s)</span>
-          </div>
-          <div className="space-y-3 sm:space-y-4">
-            {pastEvents.slice(0, 10).map((event) => {
-              const endTime = formatEventEndTime(event)
-              const duration = getEventDuration(event)
-
-              return (
-                <Card key={event.id} className="opacity-70 hover:opacity-100 transition-opacity border-l-4 border-l-gray-300">
-                  <CardHeader className="p-4 sm:p-6">
-                    <div className="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-4">
-                      <div className="flex-1 min-w-0 w-full sm:w-auto">
-                        <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
-                          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0">
-                            <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-gray-500 dark:text-gray-300" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <CardTitle className="text-base sm:text-lg mb-2 sm:mb-1 truncate">{event.summary}</CardTitle>
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 flex-wrap text-xs sm:text-sm text-muted-foreground">
-                              <div className="flex items-center gap-2">
-                                <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground dark:text-gray-300 flex-shrink-0" />
-                                <span className="text-sm sm:text-base">{formatEventDate(event)}</span>
-                                {endTime && (
-                                  <>
-                                    <span className="hidden sm:inline">—</span>
-                                    <span className="sm:hidden block">às</span>
-                                    <span className="text-sm sm:text-base">{endTime}</span>
-                                  </>
+                                {(event.location || (event.attendees && event.attendees.length > 0)) && (
+                                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                                    {event.location && (
+                                      <div className="flex items-center gap-2">
+                                        <MapPin className="h-4 w-4" />
+                                        <span className="truncate max-w-xs">{event.location}</span>
+                                      </div>
+                                    )}
+                                    {event.attendees && event.attendees.length > 0 && (
+                                      <div className="flex items-center gap-2">
+                                        <Users className="h-4 w-4" />
+                                        <span>
+                                          {event.attendees.length} participante{event.attendees.length > 1 ? 's' : ''}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
                                 )}
-                                {duration && (
-                                  <>
-                                    <span className="mx-1 hidden sm:inline">•</span>
-                                    <span className="text-xs sm:text-sm">{duration}</span>
-                                  </>
+
+                                {event.description && 
+                                 !event.description.includes('Para acessar informações detalhadas sobre eventos criados automaticamente') &&
+                                 !event.description.includes('Este evento foi criado com base em um e-mail') &&
+                                 !event.description.includes('g.co/calendar') &&
+                                 !event.description.includes('mail.google.com') && (
+                                  <p className="text-sm text-muted-foreground mt-3 line-clamp-2">{event.description}</p>
                                 )}
                               </div>
                             </div>
                           </div>
-                        </div>
 
-                        {(event.location || (event.attendees && event.attendees.length > 0)) && (
-                          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4 mt-3 sm:mt-4 text-xs sm:text-sm text-muted-foreground">
-                            {event.location && (
-                              <div className="flex items-center gap-2">
-                                <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground dark:text-gray-300 flex-shrink-0" />
-                                <span className="truncate max-w-[200px] sm:max-w-xs">{event.location}</span>
+                          {event.htmlLink && (
+                            <Button variant="outline" size="sm" asChild className="dashboard-btn-secondary flex-shrink-0">
+                              <a href={event.htmlLink} target="_blank" rel="noopener noreferrer">
+                                <ExternalLink className="h-4 w-4 mr-2" />
+                                Abrir
+                              </a>
+                            </Button>
+                          )}
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  </motion.div>
+                )
+              })}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Past Events - Collapsible */}
+        {pastEvents.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="mt-8"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="dashboard-section-title">Eventos Concluídos</h2>
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-muted-foreground">{pastEvents.length} evento(s)</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setPastEventsExpanded(!pastEventsExpanded)}
+                  className="dashboard-btn-secondary"
+                >
+                  {pastEventsExpanded ? (
+                    <>
+                      <ChevronUp className="h-4 w-4 mr-2" />
+                      Ocultar
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="h-4 w-4 mr-2" />
+                      Mostrar
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+            {pastEventsExpanded && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-4"
+              >
+                {pastEvents.slice(0, 10).map((event, index) => {
+                  const endTime = formatEventEndTime(event)
+                  const duration = getEventDuration(event)
+
+                  return (
+                    <motion.div
+                      key={event.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                    >
+                      <Card className="dashboard-transactions-card dashboard-transaction-item opacity-70 hover:opacity-100 transition-opacity border-l-4 border-l-gray-500/30">
+                        <CardHeader className="p-6">
+                          <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                            <div className="flex-1 min-w-0 w-full">
+                              <div className="flex items-start gap-4 mb-4">
+                                <div className="dashboard-transaction-icon bg-gray-500/20 border-gray-500/30 flex-shrink-0">
+                                  <Calendar className="h-6 w-6 text-gray-400" strokeWidth={2.5} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <CardTitle className="text-lg mb-2 truncate">{event.summary}</CardTitle>
+                                  <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                                    <div className="flex items-center gap-2">
+                                      <Clock className="h-4 w-4" />
+                                      <span>{formatEventDate(event)}</span>
+                                      {endTime && (
+                                        <>
+                                          <span>—</span>
+                                          <span>{endTime}</span>
+                                        </>
+                                      )}
+                                      {duration && (
+                                        <>
+                                          <span className="mx-1">•</span>
+                                          <span>{duration}</span>
+                                        </>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {(event.location || (event.attendees && event.attendees.length > 0)) && (
+                                    <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mt-3">
+                                      {event.location && (
+                                        <div className="flex items-center gap-2">
+                                          <MapPin className="h-4 w-4" />
+                                          <span className="truncate max-w-xs">{event.location}</span>
+                                        </div>
+                                      )}
+                                      {event.attendees && event.attendees.length > 0 && (
+                                        <div className="flex items-center gap-2">
+                                          <Users className="h-4 w-4" />
+                                          <span>
+                                            {event.attendees.length} participante{event.attendees.length > 1 ? 's' : ''}
+                                          </span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            )}
-                            {event.attendees && event.attendees.length > 0 && (
-                              <div className="flex items-center gap-2">
-                                <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground dark:text-gray-300 flex-shrink-0" />
-                                <span>
-                                  {event.attendees.length} participante{event.attendees.length > 1 ? 's' : ''}
-                                </span>
-                              </div>
+                            </div>
+
+                            {event.htmlLink && (
+                              <Button variant="ghost" size="sm" asChild className="dashboard-btn-secondary flex-shrink-0">
+                                <a href={event.htmlLink} target="_blank" rel="noopener noreferrer">
+                                  <ExternalLink className="h-4 w-4 mr-2" />
+                                  Ver
+                                </a>
+                              </Button>
                             )}
                           </div>
-                        )}
-                      </div>
+                        </CardHeader>
+                      </Card>
+                    </motion.div>
+                  )
+                })}
+              </motion.div>
+            )}
+          </motion.div>
+        )}
 
-                      {event.htmlLink && (
-                        <Button variant="ghost" size="sm" asChild className="flex-shrink-0 w-full sm:w-auto mt-3 sm:mt-0">
-                          <a href={event.htmlLink} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2 dark:text-gray-300" />
-                            Ver
-                          </a>
-                        </Button>
-                      )}
-                    </div>
-                  </CardHeader>
-                </Card>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Create Event Dialog */}
-      <CreateEventDialog
-        open={createEventOpen}
-        onOpenChange={setCreateEventOpen}
-        onEventCreated={fetchEvents}
-      />
+        {/* Create Event Dialog */}
+        <CreateEventDialog
+          open={createEventOpen}
+          onOpenChange={setCreateEventOpen}
+          onEventCreated={fetchEvents}
+        />
+      </div>
     </div>
   )
 }

@@ -1035,8 +1035,7 @@ h1, h2, h3, h4, h5, h6, .heading {
 .engineering-flow-step-badge {
   position: absolute;
   top: -1rem;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
+  left: 50%;
   width: 3rem;
   height: 3rem;
   background: linear-gradient(135deg, var(--step-color, #f59e0b) 0%, var(--step-color, #f59e0b) 100%);

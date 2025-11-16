@@ -913,12 +913,10 @@ export function LandingPage() {
                     <motion.div
                       className="engineering-flow-step-badge"
                       style={{ 
-                        '--step-color': item.color,
-                        left: '50%',
-                        transform: 'translateX(-50%)'
+                        '--step-color': item.color
                       } as React.CSSProperties}
-                      initial={{ scale: 0, rotate: -180 }}
-                      whileInView={{ scale: 1, rotate: 0 }}
+                      initial={{ scale: 0, rotate: -180, x: '-50%' }}
+                      whileInView={{ scale: 1, rotate: 0, x: '-50%' }}
                       viewport={{ once: true }}
                       transition={{ 
                         duration: 0.6, 
